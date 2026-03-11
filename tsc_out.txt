@@ -1,0 +1,13 @@
+src/agent/orchestrator-cron.ts(4,1): error TS6133: 'config' is declared but its value is never read.
+src/agent/orchestrator-cron.ts(95,11): error TS6133: 'workspace' is declared but its value is never read.
+src/tools/analyze-image.ts(149,25): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(body: ChatCompletionCreateParamsNonStreaming, options?: RequestOptions | undefined): APIPromise<ChatCompletion>', gave the following error.
+    Type '{ type: "image_url"; image_url: { url: string; detail?: string | undefined; }; }' is not assignable to type 'ChatCompletionContentPartText | ChatCompletionContentPartRefusal'.
+      Property 'refusal' is missing in type '{ type: "image_url"; image_url: { url: string; detail?: string | undefined; }; }' but required in type 'ChatCompletionContentPartRefusal'.
+  Overload 2 of 3, '(body: ChatCompletionCreateParamsStreaming, options?: RequestOptions | undefined): APIPromise<Stream<ChatCompletionChunk>>', gave the following error.
+    Type '{ type: "image_url"; image_url: { url: string; detail?: string | undefined; }; }' is not assignable to type 'ChatCompletionContentPartText | ChatCompletionContentPartRefusal'.
+      Property 'refusal' is missing in type '{ type: "image_url"; image_url: { url: string; detail?: string | undefined; }; }' but required in type 'ChatCompletionContentPartRefusal'.
+  Overload 3 of 3, '(body: ChatCompletionCreateParamsBase, options?: RequestOptions | undefined): APIPromise<ChatCompletion | Stream<...>>', gave the following error.
+    Type '{ type: "image_url"; image_url: { url: string; detail?: string | undefined; }; }' is not assignable to type 'ChatCompletionContentPartText | ChatCompletionContentPartRefusal'.
+      Property 'refusal' is missing in type '{ type: "image_url"; image_url: { url: string; detail?: string | undefined; }; }' but required in type 'ChatCompletionContentPartRefusal'.
+src/tools/code-interpreter.ts(185,16): error TS6133: 'executeRemote' is declared but its value is never read.

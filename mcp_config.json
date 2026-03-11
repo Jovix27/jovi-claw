@@ -1,0 +1,50 @@
+{
+    "mcpServers": {
+        "browsermcp": {
+            "disabled": true,
+            "command": "npx",
+            "args": [
+                "-y",
+                "@browsermcp/mcp@latest"
+            ]
+        },
+        "windows-cli": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@simonb97/server-win-cli"
+            ]
+        },
+        "supabase": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@supabase/mcp-server-supabase",
+                "--access-token",
+                "${SUPABASE_ACCESS_TOKEN}"
+            ]
+        },
+        "context7": {
+            "disabled": true,
+            "command": "npx",
+            "args": [
+                "-y",
+                "@upstash/context7-mcp@latest"
+            ]
+        },
+        "github": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-github"
+            ],
+            "env": {
+                "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+            }
+        },
+        "zapier": {
+            "disabled": true,
+            "url": "https://mcp.zapier.com/api/v1/connect?token=f578ec09-d9f7-41ec-8a71-4a169b128537"
+        }
+    }
+}

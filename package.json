@@ -1,0 +1,47 @@
+{
+  "name": "jovi-ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Jovi AI — A lean, secure personal AI agent on Telegram",
+  "scripts": {
+    "dev": "node --import tsx src/index.ts",
+    "build": "node node_modules/typescript/bin/tsc && node -e \"const fs=require('fs');const p=require('path');const d=p.join('dist','config');if(!fs.existsSync(d))fs.mkdirSync(d,{recursive:true});fs.copyFileSync(p.join('src','config','soul.md'),p.join(d,'soul.md'))\"",
+    "start": "node dist/index.js",
+    "remote-agent": "node --import tsx remote-agent.ts",
+    "remote-bootstrapper": "node --import tsx remote-bootstrapper.ts",
+    "setup-hotkey": "powershell -ExecutionPolicy Bypass -File setup.ps1",
+    "bootstrapper-hotkey": "powershell -ExecutionPolicy Bypass -NoProfile -File setup-bootstrapper-hotkey.ps1"
+  },
+  "dependencies": {
+    "@gradio/client": "^2.1.0",
+    "@libsql/client": "^0.17.0",
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "@qdrant/js-client-rest": "^1.17.0",
+    "@types/nodemailer": "^7.0.11",
+    "@types/ws": "^8.18.1",
+    "dotenv": "^16.4.7",
+    "duck-duck-scrape": "^2.2.7",
+    "googlethis": "^1.8.0",
+    "grammy": "^1.35.0",
+    "node-global-key-listener": "^0.3.0",
+    "node-schedule": "^2.1.1",
+    "nodemailer": "^8.0.1",
+    "openai": "^6.25.0",
+    "pdf-lib": "^1.17.1",
+    "qrcode-terminal": "^0.12.0",
+    "systeminformation": "^5.31.1",
+    "whatsapp-web.js": "^1.34.6",
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^22.19.13",
+    "@types/node-schedule": "^2.1.8",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

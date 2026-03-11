@@ -1,0 +1,14 @@
+﻿Associate existing project with current directory, may specify projectId as an argument
+
+Usage: railway.exe link [OPTIONS]
+
+Options:
+  -e, --environment <ENVIRONMENT>  Environment to link to
+  -p, --project <PROJECT>          Project to link to
+  -s, --service <SERVICE>          The service to link to
+  -t, --team <TEAM>                The team to link to (deprecated: use --workspace instead)
+  -w, --workspace <WORKSPACE>      The workspace to link to
+      --json                       Output in JSON format
+  -h, --help                       Print help
+  -V, --version                    Print version
+

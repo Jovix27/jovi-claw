@@ -1,0 +1,170 @@
+﻿
+> jovi-ai@0.1.0 dev
+> node --import tsx src/index.ts
+
+2026-02-28T13:48:52.874Z [INFO ] Built-in tool registry loaded. {"count":8}
+
+    ΓòªΓòöΓòÉΓòùΓòª  ΓòªΓòª  ΓòöΓòÉΓòùΓòª
+    ΓòæΓòæ ΓòæΓòÜΓòùΓòöΓò¥Γòæ  ΓòáΓòÉΓòúΓòæ
+  ΓòÜΓò¥ΓòÜΓòÉΓò¥ ΓòÜΓò¥ Γò⌐  Γò⌐ Γò⌐Γò⌐
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  Personal AI Agent
+  Level 1 ΓÇö Foundation
+  
+2026-02-28T13:48:52.875Z [INFO ] Starting Jovi AI... {"model":"google/gemini-2.0-flash-001","allowedUsers":1,"logLevel":"info"}
+2026-02-28T13:48:52.877Z [INFO ] Initializing SQLite memory database {"path":"jovi_memory.db"}
+2026-02-28T13:48:54.324Z [INFO ] Semantic memory (Pinecone) initialized successfully.
+2026-02-28T13:48:54.325Z [INFO ] Found 6 MCP server(s) in config.
+2026-02-28T13:48:54.325Z [INFO ] Connecting to MCP server: browsermcp... {"type":"stdio","command":"npx","argCount":2}
+node.exe : Failed to kill process 
+on port 9009: Error: Command 
+failed: FOR /F "tokens=5" %a in 
+('netstat -ano ^| findstr :9009') 
+do taskkill /F /PID %a
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Users\brigh\AppData\Roaming\ 
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~
+    + CategoryInfo          : Not 
+   Specified: (Failed to kill ..  
+  .kill /F /PID %a:String) [],    
+ RemoteException
+    + FullyQualifiedErrorId : Nat 
+   iveCommandError
+ 
+    at genericNodeError 
+(node:internal/errors:983:15)
+    at wrappedFn 
+(node:internal/errors:537:14)
+    at checkExecSyncError 
+(node:child_process:916:11)
+    at execSync 
+(node:child_process:988:15)
+    at killProcessOnPort (file:///
+C:/Users/brigh/AppData/Local/npm-c
+ache/_npx/6ddf87659f2ad8a4/node_mo
+dules/@browsermcp/mcp/dist/index.j
+s:172:7)
+    at createWebSocketServer (file
+:///C:/Users/brigh/AppData/Local/n
+pm-cache/_npx/6ddf87659f2ad8a4/nod
+e_modules/@browsermcp/mcp/dist/ind
+ex.js:185:3)
+    at createServerWithTools (file
+:///C:/Users/brigh/AppData/Local/n
+pm-cache/_npx/6ddf87659f2ad8a4/nod
+e_modules/@browsermcp/mcp/dist/ind
+ex.js:205:21)
+    at createServer (file:///C:/Us
+ers/brigh/AppData/Local/npm-cache/
+_npx/6ddf87659f2ad8a4/node_modules
+/@browsermcp/mcp/dist/index.js:730
+:10)
+    at Command.<anonymous> (file:/
+//C:/Users/brigh/AppData/Local/npm
+-cache/_npx/6ddf87659f2ad8a4/node_
+modules/@browsermcp/mcp/dist/index
+.js:738:24)
+    at Command.listener [as 
+_actionHandler] (C:\Users\brigh\Ap
+pData\Local\npm-cache\_npx\6ddf876
+59f2ad8a4\node_modules\commander\l
+ib\command.js:552:17) {
+  status: 1,
+  signal: null,
+  output: [ null, <Buffer >, 
+<Buffer > ],
+  pid: 30480,
+  stdout: <Buffer >,
+  stderr: <Buffer >
+}
+{"audit":true,"ts":"2026-02-28T13:48:56.651Z","action":"mcp_connected","detail":{"server":"browsermcp","toolCount":12}}
+2026-02-28T13:48:56.652Z [INFO ] Γ£ö Connected to MCP server: browsermcp (12 tools)
+2026-02-28T13:48:56.652Z [INFO ] Connecting to MCP server: github... {"type":"stdio","command":"npx","argCount":2}
+GitHub MCP Server running on stdio
+{"audit":true,"ts":"2026-02-28T13:48:57.993Z","action":"mcp_connected","detail":{"server":"github","toolCount":26}}
+2026-02-28T13:48:57.993Z [INFO ] Γ£ö Connected to MCP server: github (26 tools)
+2026-02-28T13:48:57.993Z [INFO ] Connecting to MCP server: context7... {"type":"stdio","command":"npx","argCount":2}
+Context7 Documentation MCP Server 
+v2.1.2 running on stdio
+{"audit":true,"ts":"2026-02-28T13:48:59.510Z","action":"mcp_connected","detail":{"server":"context7","toolCount":2}}
+2026-02-28T13:48:59.511Z [INFO ] Γ£ö Connected to MCP server: context7 (2 tools)
+2026-02-28T13:48:59.511Z [INFO ] Connecting to MCP server: windows-cli... {"type":"stdio","command":"npx","argCount":2}
+The system cannot find the path 
+specified.
+node:internal/modules/cjs/loader:1
+386
+  throw err;
+  ^
+
+Error: Cannot find module 
+'E:\Company\Green Build 
+AI\tsx\dist\cli.mjs'
+    at Function._resolveFilename (
+node:internal/modules/cjs/loader:1
+383:15)
+    at defaultResolveImpl (node:in
+ternal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (nod
+e:internal/modules/cjs/loader:1030
+:22)
+    at Function._load (node:intern
+al/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync 
+(node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:intern
+al/modules/cjs/loader:237:24)
+    at 
+Function.executeUserEntryPoint 
+[as runMain] (node:internal/module
+s/run_main:171:5)
+    at node:internal/main/run_main
+_module:36:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v22.20.0
+2026-02-28T13:49:00.064Z [ERROR] 
+Failed to connect MCP server: 
+windows-cli {"error":"MCP error 
+-32000: Connection closed"}
+2026-02-28T13:49:00.065Z [INFO ] Connecting to MCP server: supabase... {"type":"stdio","command":"npx","argCount":4}
+{"audit":true,"ts":"2026-02-28T13:49:02.004Z","action":"mcp_connected","detail":{"server":"supabase","toolCount":29}}
+2026-02-28T13:49:02.004Z [INFO ] Γ£ö Connected to MCP server: supabase (29 tools)
+2026-02-28T13:49:02.004Z [INFO ] Connecting to MCP server: zapier... {"type":"url (SSE)"}
+2026-02-28T13:51:00.501Z [ERROR] 
+Failed to connect MCP server: 
+zapier {"error":"SSE error: 
+undefined"}
+2026-02-28T13:51:00.501Z [INFO ] MCP init complete. 4 server(s) connected, 69 tool(s) registered.
+2026-02-28T13:51:00.501Z [INFO ] ≡ƒÜÇ Bot is live! Listening via long-polling (no open ports).
+2026-02-28T13:51:00.501Z [INFO ]    Whitelisted users: 1614643393
+2026-02-28T13:51:01.359Z [INFO ] grammY polling started successfully.
+2026-02-28T13:51:01.526Z [INFO ] Received message. {"userId":1614643393,"length":15}
+{"audit":true,"ts":"2026-02-28T13:51:01.916Z","action":"agent_loop_started","userId":1614643393}
+{"audit":true,"ts":"2026-02-28T13:51:03.437Z","action":"agent_loop_completed","userId":1614643393,"detail":{"iterations":1}}
+2026-02-28T13:51:03.799Z [INFO ] Received message. {"userId":1614643393,"length":13}
+{"audit":true,"ts":"2026-02-28T13:51:04.139Z","action":"agent_loop_started","userId":1614643393}
+2026-02-28T13:51:05.830Z [INFO ] LLM requested 1 tool call(s).
+2026-02-28T13:51:05.830Z [INFO ] Tool call: open_application {"id":"tool_open_application_ZeDkhbDdbrVlxjxwb7G3"}
+{"audit":true,"ts":"2026-02-28T13:51:05.830Z","action":"tool_called","userId":1614643393,"detail":{"tool":"open_application"}}
+2026-02-28T13:51:05.831Z [INFO ] Executing tool: open_application {"input":{"appName":"Settings"},"userId":1614643393}
+2026-02-28T13:51:05.831Z [INFO ] Opening application/link: Settings
+2026-02-28T13:51:06.193Z [ERROR] 
+Failed to execute OS control: 
+explorer ms-settings: {"error":{"c
+ode":1,"killed":false,"signal":nul
+l,"cmd":"explorer ms-settings:"}}
+{"audit":true,"ts":"2026-02-28T13:51:07.146Z","action":"agent_loop_completed","userId":1614643393,"detail":{"iterations":2}}
+2026-02-28T13:51:22.236Z [INFO ] Received message. {"userId":1614643393,"length":15}
+{"audit":true,"ts":"2026-02-28T13:51:22.587Z","action":"agent_loop_started","userId":1614643393}
+{"audit":true,"ts":"2026-02-28T13:51:25.797Z","action":"agent_loop_completed","userId":1614643393,"detail":{"iterations":1}}
+2026-02-28T13:51:42.975Z [INFO ] Received message. {"userId":1614643393,"length":17}
+{"audit":true,"ts":"2026-02-28T13:51:43.310Z","action":"agent_loop_started","userId":1614643393}
+{"audit":true,"ts":"2026-02-28T13:51:46.067Z","action":"agent_loop_completed","userId":1614643393,"detail":{"iterations":1}}
+

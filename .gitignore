@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment (secrets) — NEVER commit .env
+.env
+.env.*
+!.env.example
+
+# Database files (contain conversation data)
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Audit / log files (may contain PII)
+*.log
+logs/
+audit/
+
+# Temp voice files
+tmp/
+*.ogg
+*.mp3
+*.wav
+
+# OS
+Thumbs.db
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# WhatsApp Auth
+whatsapp_auth_jovi/
+.wwebjs_cache/
+.wwebjs_auth/

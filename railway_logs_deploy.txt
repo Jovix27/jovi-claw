@@ -1,0 +1,34 @@
+﻿Starting Container
+2026-03-02T04:27:31.957Z [INFO ] LLM providers: Gemini ΓåÆ Mistral ΓåÆ OpenRouter (active: Gemini / gemini-2.0-flash)
+2026-03-02T04:27:32.375Z [INFO ] Built-in tool registry loaded. {"count":21}
+
+    ΓòªΓòöΓòÉΓòùΓòª  ΓòªΓòª  ΓòöΓòÉΓòùΓòª
+    ΓòæΓòæ ΓòæΓòÜΓòùΓòöΓò¥Γòæ  ΓòáΓòÉΓòúΓòæ
+  ΓòÜΓò¥ΓòÜΓòÉΓò¥ ΓòÜΓò¥ Γò⌐  Γò⌐ Γò⌐Γò⌐
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  Personal AI Agent
+  Level 1 ΓÇö Foundation
+  
+2026-03-02T04:27:32.376Z [INFO ] Starting Jovi AI... {"model":"gemini-2.0-flash (Gemini)","allowedUsers":1,"logLevel":"info"}
+2026-03-02T04:27:32.379Z [INFO ] Initializing SQLite memory database {"path":"jovi_memory.db"}
+2026-03-02T04:27:32.611Z [INFO ] Semantic memory (Pinecone) initialized successfully.
+2026-03-02T04:27:32.611Z [INFO ] Found 3 MCP server(s) in config.
+2026-03-02T04:27:32.612Z [INFO ] Connecting to MCP server: context7... {"type":"stdio","command":"npx","argCount":2}
+2026-03-02T04:27:37.608Z [INFO ] Γ£ö Connected to MCP server: context7 (2 tools)
+2026-03-02T04:27:37.609Z [INFO ] Connecting to MCP server: github... {"type":"stdio","command":"npx","argCount":2}
+Context7 Documentation MCP Server v2.1.2 running on stdio
+2026-03-02T04:27:37.786514497Z [INFO]  audit=true ts="2026-03-02T04:27:37.608Z" action="mcp_connected" detail={"server":"context7","toolCount":2}
+npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+npm warn deprecated @modelcontextprotocol/server-github@2025.4.8: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+GitHub MCP Server running on stdio
+2026-03-02T04:27:40.993290126Z [INFO]  audit=true ts="2026-03-02T04:27:40.231Z" action="mcp_connected" detail={"server":"github","toolCount":26}
+2026-03-02T04:27:40.231Z [INFO ] Γ£ö Connected to MCP server: github (26 tools)
+2026-03-02T04:27:40.231Z [INFO ] Connecting to MCP server: zapier... {"type":"url (SSE)"}
+2026-03-02T04:28:10.234Z [ERROR] Failed to connect MCP server: zapier {"error":"Connection timeout after 30s"}
+2026-03-02T04:28:10.234Z [INFO ] MCP init complete. 2 server(s) connected, 28 tool(s) registered.
+2026-03-02T04:28:10.241Z [INFO ] Remote control relay server started. {"port":8080}
+2026-03-02T04:28:10.241Z [INFO ] ≡ƒÜÇ Bot is live! Listening via long-polling (no open ports).
+2026-03-02T04:28:10.241Z [INFO ]    Whitelisted users: 1614643393
+2026-03-02T04:28:10.252Z [INFO ] ≡ƒôí Remote control relay server listening on port 8080
+2026-03-02T04:28:10.720Z [INFO ] grammY polling started successfully.
+2026-03-02T04:28:10.747Z [INFO ] Heartbeat scheduled daily at 08:00 (local time)

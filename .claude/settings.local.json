@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx:*)",
+      "Bash(./node_modules/.bin/tsc:*)",
+      "Bash(dir:*)",
+      "Bash(npm run bootstrapper-hotkey:*)"
+    ]
+  }
+}

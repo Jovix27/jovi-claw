@@ -1,0 +1,47 @@
+# Dependencies (rebuilt inside container)
+node_modules/
+
+# Build output (not needed — tsx compiles on the fly)
+dist/
+
+# Local secrets — never upload
+.env
+.env.*
+
+# Local databases (ephemeral on Railway anyway)
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Log files
+*.log
+logs/
+audit/
+app_readable.txt
+
+# Temp voice files
+tmp/
+*.ogg
+*.mp3
+*.wav
+
+# Windows-only binaries (won't run on Linux)
+*.exe
+*.cs
+*.ps1
+
+# Scratch / dump files
+*.json.bak
+dump.json
+clean_dump.json
+clean_dump2.json
+
+# OS / IDE
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+.claude/

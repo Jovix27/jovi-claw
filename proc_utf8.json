@@ -1,0 +1,374 @@
+﻿[
+    {
+        "ProcessId":  29576,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @21st-dev/magic@latest"
+    },
+    {
+        "ProcessId":  26924,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @21st-dev/magic@latest"
+    },
+    {
+        "ProcessId":  28440,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c magic"
+    },
+    {
+        "ProcessId":  34640,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\590bd8cfc4710544\\node_modules\\.bin\\\\..\\@21st-dev\\magic\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  8844,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @upstash/context7-mcp"
+    },
+    {
+        "ProcessId":  26532,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @upstash/context7-mcp"
+    },
+    {
+        "ProcessId":  5992,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c context7-mcp"
+    },
+    {
+        "ProcessId":  8560,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\eea2bd7412d4593b\\node_modules\\.bin\\\\..\\@upstash\\context7-mcp\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  15544,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @modelcontextprotocol/server-github"
+    },
+    {
+        "ProcessId":  22776,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @modelcontextprotocol/server-github"
+    },
+    {
+        "ProcessId":  23556,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c mcp-server-github"
+    },
+    {
+        "ProcessId":  6124,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\3dfbf5a9eea4a1b3\\node_modules\\.bin\\\\..\\@modelcontextprotocol\\server-github\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  22184,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @netlify/mcp"
+    },
+    {
+        "ProcessId":  18844,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @netlify/mcp"
+    },
+    {
+        "ProcessId":  10548,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c netlify-mcp"
+    },
+    {
+        "ProcessId":  24464,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\364ed142633431f1\\node_modules\\.bin\\\\..\\@netlify\\mcp\\dist\\netlify-mcp.js\" "
+    },
+    {
+        "ProcessId":  6108,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @pinecone-database/mcp"
+    },
+    {
+        "ProcessId":  22524,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @pinecone-database/mcp"
+    },
+    {
+        "ProcessId":  15740,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c pinecone-mcp"
+    },
+    {
+        "ProcessId":  9936,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\cd01360b52fa3203\\node_modules\\.bin\\\\..\\@pinecone-database\\mcp\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  27072,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @supabase/mcp-server-supabase@latest --access-token sbp_4883f22654a25f1e4d4b4e9c4c0e8cd165d1c24e"
+    },
+    {
+        "ProcessId":  16640,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @supabase/mcp-server-supabase@latest --access-token sbp_4883f22654a25f1e4d4b4e9c4c0e8cd165d1c24e"
+    },
+    {
+        "ProcessId":  29324,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c mcp-server-supabase --access-token sbp_4883f22654a25f1e4d4b4e9c4c0e8cd165d1c24e"
+    },
+    {
+        "ProcessId":  29832,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\53c4795544aaa350\\node_modules\\.bin\\\\..\\@supabase\\mcp-server-supabase\\dist\\transports\\stdio.js\" --access-token sbp_4883f22654a25f1e4d4b4e9c4c0e8cd165d1c24e"
+    },
+    {
+        "ProcessId":  22824,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @simonb97/server-win-cli"
+    },
+    {
+        "ProcessId":  26396,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @simonb97/server-win-cli"
+    },
+    {
+        "ProcessId":  17564,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c server-win-cli"
+    },
+    {
+        "ProcessId":  32576,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\b7043670c3149184\\node_modules\\.bin\\\\..\\@simonb97\\server-win-cli\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  19984,
+        "CommandLine":  "\"C:\\Windows\\System32\\cmd.exe\" /c cd /d \"E:\\Company\\Green Build AI\\R\u0026D\\Jovi Claw\\\" \u0026\u0026 npm run remote-bootstrapper"
+    },
+    {
+        "ProcessId":  14400,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npm-cli.js\" run remote-bootstrapper"
+    },
+    {
+        "ProcessId":  28180,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c node --import tsx remote-bootstrapper.ts"
+    },
+    {
+        "ProcessId":  2824,
+        "CommandLine":  "node  --import tsx remote-bootstrapper.ts"
+    },
+    {
+        "ProcessId":  25304,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c \"\"C:\\Users\\brigh\\AppData\\Roaming\\Claude\\ChromeNativeHost\\chrome-native-host.exe\" chrome-extension://fcoeoabgfenejglbffodgkkbkcdhcgfn/ --parent-window=0\" \u003c \\\\.\\pipe\\chrome.nativeMessaging.in.24f7839f103c292 \u003e \\\\.\\pipe\\chrome.nativeMessaging.out.24f7839f103c292"
+    },
+    {
+        "ProcessId":  8868,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @21st-dev/magic@latest"
+    },
+    {
+        "ProcessId":  23732,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @21st-dev/magic@latest"
+    },
+    {
+        "ProcessId":  7516,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c magic"
+    },
+    {
+        "ProcessId":  13232,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\590bd8cfc4710544\\node_modules\\.bin\\\\..\\@21st-dev\\magic\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  21036,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @21st-dev/magic@latest"
+    },
+    {
+        "ProcessId":  30616,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @21st-dev/magic@latest"
+    },
+    {
+        "ProcessId":  4564,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c magic"
+    },
+    {
+        "ProcessId":  31244,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\590bd8cfc4710544\\node_modules\\.bin\\\\..\\@21st-dev\\magic\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  27748,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @browsermcp/mcp"
+    },
+    {
+        "ProcessId":  18080,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @browsermcp/mcp"
+    },
+    {
+        "ProcessId":  24112,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @upstash/context7-mcp"
+    },
+    {
+        "ProcessId":  11624,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @upstash/context7-mcp"
+    },
+    {
+        "ProcessId":  34940,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c mcp-server-browsermcp"
+    },
+    {
+        "ProcessId":  26748,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\eab4ee736ad7e120\\node_modules\\.bin\\\\..\\@browsermcp\\mcp\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  9184,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c context7-mcp"
+    },
+    {
+        "ProcessId":  13196,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\eea2bd7412d4593b\\node_modules\\.bin\\\\..\\@upstash\\context7-mcp\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  32372,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @modelcontextprotocol/server-github"
+    },
+    {
+        "ProcessId":  29044,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @upstash/context7-mcp"
+    },
+    {
+        "ProcessId":  17808,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @modelcontextprotocol/server-github"
+    },
+    {
+        "ProcessId":  25864,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @upstash/context7-mcp"
+    },
+    {
+        "ProcessId":  19488,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c context7-mcp"
+    },
+    {
+        "ProcessId":  33340,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\eea2bd7412d4593b\\node_modules\\.bin\\\\..\\@upstash\\context7-mcp\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  14488,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c mcp-server-github"
+    },
+    {
+        "ProcessId":  26316,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\3dfbf5a9eea4a1b3\\node_modules\\.bin\\\\..\\@modelcontextprotocol\\server-github\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  23236,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @netlify/mcp"
+    },
+    {
+        "ProcessId":  30088,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @netlify/mcp"
+    },
+    {
+        "ProcessId":  35544,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @modelcontextprotocol/server-github"
+    },
+    {
+        "ProcessId":  22928,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @modelcontextprotocol/server-github"
+    },
+    {
+        "ProcessId":  34748,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c mcp-server-github"
+    },
+    {
+        "ProcessId":  8256,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\3dfbf5a9eea4a1b3\\node_modules\\.bin\\\\..\\@modelcontextprotocol\\server-github\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  33800,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @netlify/mcp"
+    },
+    {
+        "ProcessId":  17960,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @netlify/mcp"
+    },
+    {
+        "ProcessId":  31020,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c netlify-mcp"
+    },
+    {
+        "ProcessId":  16404,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\364ed142633431f1\\node_modules\\.bin\\\\..\\@netlify\\mcp\\dist\\netlify-mcp.js\" "
+    },
+    {
+        "ProcessId":  9916,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @pinecone-database/mcp"
+    },
+    {
+        "ProcessId":  28808,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c netlify-mcp"
+    },
+    {
+        "ProcessId":  28472,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @pinecone-database/mcp"
+    },
+    {
+        "ProcessId":  17420,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\364ed142633431f1\\node_modules\\.bin\\\\..\\@netlify\\mcp\\dist\\netlify-mcp.js\" "
+    },
+    {
+        "ProcessId":  2472,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @pinecone-database/mcp"
+    },
+    {
+        "ProcessId":  13628,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @pinecone-database/mcp"
+    },
+    {
+        "ProcessId":  17896,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c pinecone-mcp"
+    },
+    {
+        "ProcessId":  7060,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\cd01360b52fa3203\\node_modules\\.bin\\\\..\\@pinecone-database\\mcp\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  13420,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @supabase/mcp-server-supabase@latest --access-token sbp_4883f22654a25f1e4d4b4e9c4c0e8cd165d1c24e"
+    },
+    {
+        "ProcessId":  20376,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @supabase/mcp-server-supabase@latest --access-token sbp_4883f22654a25f1e4d4b4e9c4c0e8cd165d1c24e"
+    },
+    {
+        "ProcessId":  34284,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c pinecone-mcp"
+    },
+    {
+        "ProcessId":  23580,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\cd01360b52fa3203\\node_modules\\.bin\\\\..\\@pinecone-database\\mcp\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  31056,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @supabase/mcp-server-supabase@latest --access-token sbp_4883f22654a25f1e4d4b4e9c4c0e8cd165d1c24e"
+    },
+    {
+        "ProcessId":  27504,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @supabase/mcp-server-supabase@latest --access-token sbp_4883f22654a25f1e4d4b4e9c4c0e8cd165d1c24e"
+    },
+    {
+        "ProcessId":  30700,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c mcp-server-supabase --access-token sbp_4883f22654a25f1e4d4b4e9c4c0e8cd165d1c24e"
+    },
+    {
+        "ProcessId":  7112,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\53c4795544aaa350\\node_modules\\.bin\\\\..\\@supabase\\mcp-server-supabase\\dist\\transports\\stdio.js\" --access-token sbp_4883f22654a25f1e4d4b4e9c4c0e8cd165d1c24e"
+    },
+    {
+        "ProcessId":  18156,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c mcp-server-supabase --access-token sbp_4883f22654a25f1e4d4b4e9c4c0e8cd165d1c24e"
+    },
+    {
+        "ProcessId":  30140,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\53c4795544aaa350\\node_modules\\.bin\\\\..\\@supabase\\mcp-server-supabase\\dist\\transports\\stdio.js\" --access-token sbp_4883f22654a25f1e4d4b4e9c4c0e8cd165d1c24e"
+    },
+    {
+        "ProcessId":  6476,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @simonb97/server-win-cli"
+    },
+    {
+        "ProcessId":  25916,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @simonb97/server-win-cli"
+    },
+    {
+        "ProcessId":  27280,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /c npx -y @simonb97/server-win-cli"
+    },
+    {
+        "ProcessId":  30012,
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\\\node.exe\"  \"C:\\Users\\brigh\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npx-cli.js\" -y @simonb97/server-win-cli"
+    },
+    {
+        "ProcessId":  12320,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c server-win-cli"
+    },
+    {
+        "ProcessId":  26100,
+        "CommandLine":  "C:\\WINDOWS\\system32\\cmd.exe /d /s /c server-win-cli"
+    },
+    {
+        "ProcessId":  24524,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\b7043670c3149184\\node_modules\\.bin\\\\..\\@simonb97\\server-win-cli\\dist\\index.js\" "
+    },
+    {
+        "ProcessId":  12364,
+        "CommandLine":  "\"node\"   \"C:\\Users\\brigh\\AppData\\Local\\npm-cache\\_npx\\b7043670c3149184\\node_modules\\.bin\\\\..\\@simonb97\\server-win-cli\\dist\\index.js\" "
+    }
+]

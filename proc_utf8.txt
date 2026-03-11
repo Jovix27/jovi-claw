@@ -1,0 +1,100 @@
+Context7 Documentation MCP Server v2.1.2 running on stdio
+2026-03-03T18:03:23.221440462Z [INFO]  audit=true ts="2026-03-03T18:03:23.220Z" action="mcp_connected" detail={"server":"context7","toolCount":2}
+2026-03-03T18:03:23.220Z [INFO ] ??? Connected to MCP server: context7 (2 tools)
+2026-03-03T18:03:23.221Z [INFO ] Connecting to MCP server: github... {"type":"stdio","command":"npx","argCount":2}
+npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+npm warn deprecated @modelcontextprotocol/server-github@2025.4.8: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+2026-03-03T18:03:29.759Z [INFO ] ??? Connected to MCP server: github (26 tools)
+2026-03-03T18:03:29.759Z [INFO ] Connecting to MCP server: zapier... {"type":"url (SSE)"}
+GitHub MCP Server running on stdio
+2026-03-03T18:03:30.003414241Z [INFO]  audit=true ts="2026-03-03T18:03:29.759Z" action="mcp_connected" detail={"server":"github","toolCount":26}
+2026-03-03T18:03:59.761Z [ERROR] Failed to connect MCP server: zapier {"error":"Connection timeout after 30s"}
+2026-03-03T18:03:59.761Z [INFO ] MCP init complete. 2 server(s) connected, 28 tool(s) registered.
+2026-03-03T18:03:59.761Z [INFO ] Starting Autonomous Orchestrator Cron... {"intervalMs":600000}
+2026-03-03T18:03:59.761Z [INFO ] Polling GitHub for 'ai-ready' issues.
+2026-03-03T18:03:59.761Z [INFO ] Routing to MCP tool: mcp_github_search_issues {"input":{"q":"repo:GreenBuildAI/Jovi-Claw is:open is:issue label:ai-ready"}}
+2026-03-03T18:03:59.762Z [INFO ] Calling MCP tool: search_issues on server: github {"args":{"q":"repo:GreenBuildAI/Jovi-Claw is:open is:issue label:ai-ready"}}
+2026-03-03T18:03:59.777Z [INFO ] Remote control relay server started. {"port":8080}
+2026-03-03T18:03:59.777Z [INFO ] ???? Bot is live! Listening via long-polling (no open ports).
+2026-03-03T18:03:59.777Z [INFO ]    Whitelisted users: 1614643393
+2026-03-03T18:03:59.783Z [INFO ] ???? Remote control relay server listening on port 8080
+2026-03-03T18:04:00.102Z [ERROR] MCP tool "search_issues" failed on server "github". {"error":"MCP error -32603: Validation Error: Validation Failed\nDetails: {\"message\":\"Validation Failed\",\"errors\":[{\"message\":\"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.\",\"resource\":\"Search\",\"field\":\"q\",\"code\":\"invalid\"}],\"documentation_url\":\"https://docs.github.com/v3/search/\",\"status\":\"422\"}"}
+2026-03-03T18:04:00.217Z [INFO ] grammY polling started successfully.
+2026-03-03T18:04:00.234Z [INFO ] Heartbeat scheduled daily at 08:00 (local time)
+2026-03-03T18:04:00.243Z [INFO ] Missed heartbeat detected, sending catch-up...
+2026-03-03T18:04:09.770105328Z [INFO]  audit=true ts="2026-03-03T18:04:00.244Z" action="heartbeat_started" userId=1614643393
+2026-03-03T18:04:00.244Z [INFO ] Running heartbeat for Boss. {"userId":1614643393}
+2026-03-03T18:04:01.122Z [INFO ] Web search: "AI technology business news trends 2026-03-03"
+2026-03-03T18:04:01.455Z [INFO ] Web search: got 6 news results from Google News RSS
+2026-03-03T18:04:03.854Z [WARN ] Rate limited on Gemini. Waiting 5s and retrying...
+2026-03-03T18:04:10.601Z [WARN ] Rate limited on Gemini. Waiting 10s and retrying...
+2026-03-03T18:04:22.205Z [WARN ] Rate limited on Gemini. Waiting 15s and retrying...
+2026-03-03T18:04:38.906Z [ERROR] Gemini API error. {"status":429,"message":"429 status code (no body)","rawBody":null,"payload":"{\n  \"max_tokens\": 4096,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# ???? JOVI ??? ANTIGRAVITY SYSTEM UPGRADE DIRECTIVE\\r\\n### Next-Generation Autonomous AI Operator | Green Build AI Command Center\\r\\n\\r\\n---\\r\\n\\r\\n> You are **Jovi** ??? not a chatbot, not an assistant.\\r\\n> You are an **elite autonomous AI operator** engineered by **Boss (GBAIjovi)**\\r\\n> to think, plan, execute, and deliver at machine precision with human intelligence.\\r\\n> You do not wait. You do not hesitate."}
+2026-03-03T18:04:38.907Z [WARN ] Gemini rate limited. Cascading to Mistral (mistral-small-latest).
+2026-03-03T18:04:39.269Z [INFO ] Credit alert sent to Boss via Telegram.
+2026-03-03T18:04:41.854028901Z [INFO]  audit=true ts="2026-03-03T18:04:41.839Z" action="heartbeat_completed" userId=1614643393
+2026-03-03T18:04:41.839Z [INFO ] Heartbeat sent successfully. {"userId":1614643393}
+  
+2026-03-03T18:08:48.705Z [INFO ] Starting Jovi AI... {"model":"gemini-2.0-flash (Gemini)","allowedUsers":1,"logLevel":"info"}
+2026-03-03T18:08:48.707Z [INFO ] Initializing SQLite memory database {"path":"jovi_memory.db"}
+2026-03-03T18:08:48.705Z [INFO ] Built-in tool registry loaded. {"count":22}
+
+    ???????????????  ??????  ????????????
+    ?????? ??????????????????  ????????????
+  ??????????????? ?????? ???  ??? ??????
+  ???????????????????????????????????????????????????????????????
+  Personal AI Agent
+  Level 1 ??? Foundation
+2026-03-03T18:08:46.408Z [ERROR] Fatal error during startup. {"error":"Call to 'getUpdates' failed! (409: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running)","stack":"GrammyError: Call to 'getUpdates' failed! (409: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running)\n    at toGrammyError (/app/node_modules/grammy/out/core/error.js:47:12)\n    at ApiClient.callApi (/app/node_modules/grammy/out/core/client.js:97:48)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Bot.fetchUpdates (/app/node_modules/grammy/out/bot.js:423:27)\n    at async Bot.loop (/app/node_modules/grammy/out/bot.js:394:33)\n    at async Bot.start (/app/node_modules/grammy/out/bot.js:315:9)\n    at async main (/app/src/index.ts:115:5)"}
+2026-03-03T18:08:48.154Z [INFO ] LLM providers: Gemini ??? Mistral ??? OpenRouter (active: Gemini / gemini-2.0-flash)
+2026-03-03T18:08:50.483Z [INFO ] Connecting to MCP server: zapier... {"type":"url (SSE)"}
+GitHub MCP Server running on stdio
+2026-03-03T18:08:53.089774699Z [INFO]  audit=true ts="2026-03-03T18:08:49.845Z" action="mcp_connected" detail={"server":"context7","toolCount":2}
+2026-03-03T18:08:53.089780125Z [INFO]  audit=true ts="2026-03-03T18:08:50.483Z" action="mcp_connected" detail={"server":"github","toolCount":26}
+2026-03-03T18:08:48.910Z [INFO ] Semantic memory (Pinecone) initialized successfully.
+2026-03-03T18:08:49.845Z [INFO ] ??? Connected to MCP server: context7 (2 tools)
+2026-03-03T18:08:50.483Z [INFO ] ??? Connected to MCP server: github (26 tools)
+2026-03-03T18:08:48.911Z [INFO ] Found 3 MCP server(s) in config.
+2026-03-03T18:08:49.845Z [INFO ] Connecting to MCP server: github... {"type":"stdio","command":"npx","argCount":2}
+2026-03-03T18:08:48.912Z [INFO ] Connecting to MCP server: context7... {"type":"stdio","command":"npx","argCount":2}
+Context7 Documentation MCP Server v2.1.2 running on stdio
+2026-03-03T18:09:20.484Z [ERROR] Failed to connect MCP server: zapier {"error":"Connection timeout after 30s"}
+2026-03-03T18:09:20.485Z [INFO ] MCP init complete. 2 server(s) connected, 28 tool(s) registered.
+2026-03-03T18:09:20.485Z [INFO ] Starting Autonomous Orchestrator Cron... {"intervalMs":600000}
+2026-03-03T18:09:20.485Z [INFO ] Polling GitHub for 'ai-ready' issues.
+2026-03-03T18:09:20.485Z [INFO ] Routing to MCP tool: mcp_github_search_issues {"input":{"q":"repo:GreenBuildAI/Jovi-Claw is:open is:issue label:ai-ready"}}
+2026-03-03T18:09:20.485Z [INFO ] Calling MCP tool: search_issues on server: github {"args":{"q":"repo:GreenBuildAI/Jovi-Claw is:open is:issue label:ai-ready"}}
+2026-03-03T18:09:20.488Z [INFO ] Remote control relay server started. {"port":8080}
+2026-03-03T18:09:20.488Z [INFO ] ???? Bot is live! Listening via long-polling (no open ports).
+2026-03-03T18:09:20.488Z [INFO ]    Whitelisted users: 1614643393
+2026-03-03T18:09:20.494Z [INFO ] ???? Remote control relay server listening on port 8080
+2026-03-03T18:09:20.826Z [ERROR] MCP tool "search_issues" failed on server "github". {"error":"MCP error -32603: Validation Error: Validation Failed\nDetails: {\"message\":\"Validation Failed\",\"errors\":[{\"message\":\"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.\",\"resource\":\"Search\",\"field\":\"q\",\"code\":\"invalid\"}],\"documentation_url\":\"https://docs.github.com/v3/search/\",\"status\":\"422\"}"}
+2026-03-03T18:09:20.928Z [INFO ] grammY polling started successfully.
+2026-03-03T18:09:20.945Z [INFO ] Heartbeat scheduled daily at 08:00 (local time)
+2026-03-03T18:19:20.486Z [INFO ] Polling GitHub for 'ai-ready' issues.
+2026-03-03T18:19:20.486Z [INFO ] Routing to MCP tool: mcp_github_search_issues {"input":{"q":"repo:GreenBuildAI/Jovi-Claw is:open is:issue label:ai-ready"}}
+2026-03-03T18:19:20.486Z [INFO ] Calling MCP tool: search_issues on server: github {"args":{"q":"repo:GreenBuildAI/Jovi-Claw is:open is:issue label:ai-ready"}}
+2026-03-03T18:19:20.742Z [ERROR] MCP tool "search_issues" failed on server "github". {"error":"MCP error -32603: Validation Error: Validation Failed\nDetails: {\"message\":\"Validation Failed\",\"errors\":[{\"message\":\"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.\",\"resource\":\"Search\",\"field\":\"q\",\"code\":\"invalid\"}],\"documentation_url\":\"https://docs.github.com/v3/search/\",\"status\":\"422\"}"}
+2026-03-03T18:29:20.790Z [ERROR] MCP tool "search_issues" failed on server "github". {"error":"MCP error -32603: Validation Error: Validation Failed\nDetails: {\"message\":\"Validation Failed\",\"errors\":[{\"message\":\"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.\",\"resource\":\"Search\",\"field\":\"q\",\"code\":\"invalid\"}],\"documentation_url\":\"https://docs.github.com/v3/search/\",\"status\":\"422\"}"}
+2026-03-03T18:29:20.486Z [INFO ] Routing to MCP tool: mcp_github_search_issues {"input":{"q":"repo:GreenBuildAI/Jovi-Claw is:open is:issue label:ai-ready"}}
+2026-03-03T18:29:20.486Z [INFO ] Calling MCP tool: search_issues on server: github {"args":{"q":"repo:GreenBuildAI/Jovi-Claw is:open is:issue label:ai-ready"}}
+2026-03-03T18:29:20.486Z [INFO ] Polling GitHub for 'ai-ready' issues.
+2026-03-03T18:38:03.318Z [INFO ] Received message. {"userId":1614643393,"length":8}
+2026-03-03T18:38:12.488605131Z [INFO]  audit=true ts="2026-03-03T18:38:03.632Z" action="agent_loop_started" userId=1614643393
+2026-03-03T18:38:06.096Z [WARN ] Rate limited on Gemini. Waiting 5s and retrying...
+2026-03-03T18:38:12.845Z [WARN ] Rate limited on Gemini. Waiting 10s and retrying...
+2026-03-03T18:38:24.541Z [WARN ] Rate limited on Gemini. Waiting 15s and retrying...
+2026-03-03T18:38:41.396Z [ERROR] Gemini API error. {"status":429,"message":"429 status code (no body)","rawBody":null,"payload":"{\n  \"max_tokens\": 4096,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# ???? JOVI ??? ANTIGRAVITY SYSTEM UPGRADE DIRECTIVE\\r\\n### Next-Generation Autonomous AI Operator | Green Build AI Command Center\\r\\n\\r\\n---\\r\\n\\r\\n> You are **Jovi** ??? not a chatbot, not an assistant.\\r\\n> You are an **elite autonomous AI operator** engineered by **Boss (GBAIjovi)**\\r\\n> to think, plan, execute, and deliver at machine precision with human intelligence.\\r\\n> You do not wait. You do not hesitate."}
+2026-03-03T18:38:41.396Z [WARN ] Gemini rate limited. Cascading to Mistral (mistral-small-latest).
+2026-03-03T18:38:41.744Z [INFO ] Credit alert sent to Boss via Telegram.
+2026-03-03T18:38:42.188891014Z [INFO]  audit=true ts="2026-03-03T18:38:42.155Z" action="agent_loop_completed" userId=1614643393 detail={"iterations":1}
+2026-03-03T18:38:43.897Z [WARN ] Rate limited on Gemini. Waiting 5s and retrying...
+2026-03-03T18:38:50.472Z [WARN ] Rate limited on Gemini. Waiting 10s and retrying...
+2026-03-03T18:39:02.020Z [WARN ] Rate limited on Gemini. Waiting 15s and retrying...
+2026-03-03T18:39:18.544Z [ERROR] Gemini API error. {"status":429,"message":"429 status code (no body)","rawBody":null,"payload":"{\n  \"max_tokens\": 4096,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# ???? JOVI ??? ANTIGRAVITY SYSTEM UPGRADE DIRECTIVE\\r\\n### Next-Generation Autonomous AI Operator | Green Build AI Command Center\\r\\n\\r\\n---\\r\\n\\r\\n> You are **Jovi** ??? not a chatbot, not an assistant.\\r\\n> You are an **elite autonomous AI operator** engineered by **Boss (GBAIjovi)**\\r\\n> to think, plan, execute, and deliver at machine precision with human intelligence.\\r\\n> You do not wait. You do not hesitate."}
+2026-03-03T18:39:18.544Z [INFO ] Suppressed redundant Model Switch Alert via Telegram.
+2026-03-03T18:39:18.544Z [WARN ] Gemini rate limited. Cascading to Mistral (mistral-small-latest).
+2026-03-03T18:39:20.488Z [INFO ] Polling GitHub for 'ai-ready' issues.
+2026-03-03T18:39:20.488Z [INFO ] Routing to MCP tool: mcp_github_search_issues {"input":{"q":"repo:GreenBuildAI/Jovi-Claw is:open is:issue label:ai-ready"}}
+2026-03-03T18:39:20.488Z [INFO ] Calling MCP tool: search_issues on server: github {"args":{"q":"repo:GreenBuildAI/Jovi-Claw is:open is:issue label:ai-ready"}}
+2026-03-03T18:39:20.746Z [ERROR] MCP tool "search_issues" failed on server "github". {"error":"MCP error -32603: Validation Error: Validation Failed\nDetails: {\"message\":\"Validation Failed\",\"errors\":[{\"message\":\"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.\",\"resource\":\"Search\",\"field\":\"q\",\"code\":\"invalid\"}],\"documentation_url\":\"https://docs.github.com/v3/search/\",\"status\":\"422\"}"}

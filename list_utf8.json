@@ -1,0 +1,43 @@
+﻿[
+  {
+    "workspace": {
+      "id": "dab07024-1bfc-487b-a758-e4fe6171e60f",
+      "name": "Green Build AI's Projects"
+    },
+    "id": "01b27be9-43aa-4a25-bab1-1abfa1ed8b10",
+    "name": "Gravity Claw",
+    "createdAt": "2026-02-28T14:30:05.695Z",
+    "updatedAt": "2026-02-28T14:33:41.790Z",
+    "deletedAt": null,
+    "environments": {
+      "edges": [
+        {
+          "node": {
+            "id": "c6296260-d691-4a3a-830b-f92169fe2cbe",
+            "name": "production",
+            "canAccess": true,
+            "serviceInstances": {
+              "edges": [
+                {
+                  "node": {
+                    "serviceId": "fad9f3b3-af92-496d-bf8b-b4e3007b2312"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "services": {
+      "edges": [
+        {
+          "node": {
+            "id": "fad9f3b3-af92-496d-bf8b-b4e3007b2312",
+            "name": "Jovi Claw"
+          }
+        }
+      ]
+    }
+  }
+]
