@@ -64,6 +64,23 @@ async function main(): Promise<void> {
         });
     }
 
+    // ─── Start Remote Control Relay (EARLY) ──────────────
+    // We start this first so Railway healthcheck passes immediately
+    if (config.remoteControl.secret) {
+        setAgentConnectedCallback(async () => {
+            if (bossId) {
+                await setAgentMode(bossId, true);
+                await bot.api.sendMessage(
+                    bossId,
+                    "🟢 *Agent Mode Auto-Activated!*\nYour PC just connected, Boss. I now have full remote control — ready for commands.",
+                    { parse_mode: "Markdown" }
+                ).catch(() => {});
+            }
+        });
+        startRelayServer(config.remoteControl.secret, config.remoteControl.port);
+        logger.info("Remote control relay server started.", { port: config.remoteControl.port });
+    }
+
     if (bossId) {
         setCreditAlertCallback(async (message: string) => {
             try {
@@ -95,24 +112,6 @@ async function main(): Promise<void> {
     // ─── Register Heartbeat Command ──────────────────────
     registerHeartbeatCommand(bot);
 
-    // ─── Start Remote Control Relay ──────────────────────
-    if (config.remoteControl.secret) {
-        // Auto-enable agent mode and notify Boss the moment the PC connects
-        setAgentConnectedCallback(async () => {
-            if (bossId) {
-                await setAgentMode(bossId, true);
-                await bot.api.sendMessage(
-                    bossId,
-                    "🟢 *Agent Mode Auto-Activated!*\nYour PC just connected, Boss. I now have full remote control — ready for commands.",
-                    { parse_mode: "Markdown" }
-                ).catch(() => {}); // non-fatal
-            }
-        });
-        startRelayServer(config.remoteControl.secret, config.remoteControl.port);
-        logger.info("Remote control relay server started.", { port: config.remoteControl.port });
-    } else {
-        logger.info("Remote control disabled (no REMOTE_CONTROL_SECRET set).");
-    }
 
     // ─── Graceful shutdown ────────────────────────────────
     const shutdown = async (signal: string) => {

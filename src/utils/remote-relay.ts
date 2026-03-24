@@ -224,7 +224,11 @@ export function startRelayServer(secret: string, port: number): void {
         }
     });
 
-    // ─── NEW: Dashboard API Status ────────────────────────
+    // ─── NEW: Healthcheck Route ───────────────────────────
+    app.get("/", (_req, res) => {
+        res.status(200).send("Jovi AI Relay is healthy. 🚀");
+    });
+
     app.get("/api/status", (_req, res) => {
         res.json({
             status: "online",
@@ -443,8 +447,8 @@ export function startRelayServer(secret: string, port: number): void {
         ws.on("close", () => clearInterval(pingInterval));
     });
 
-    httpServer.listen(port, () => {
-        logger.info(`📡 Unified Jovi Server (Relay + Dashboard) live on port ${port}`);
+    httpServer.listen(port, "0.0.0.0", () => {
+        logger.info(`📡 Unified Jovi Server (Relay + Dashboard) live on port ${port} (0.0.0.0)`);
     });
 }
 
