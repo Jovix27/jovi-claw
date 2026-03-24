@@ -194,7 +194,7 @@ export default function ChatInterface({
     let apiBase = process.env.NEXT_PUBLIC_API_URL;
     if (!apiBase && typeof window !== "undefined") {
       if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-claw.vercel.app") {
-        apiBase = "https://jovi-claw-production.up.railway.app";
+        apiBase = "https://jovi-claw-production-6270.up.railway.app";
       } else {
         apiBase = "http://localhost:3001";
       }
@@ -229,7 +229,7 @@ export default function ChatInterface({
     let apiBase = process.env.NEXT_PUBLIC_API_URL;
     if (!apiBase && typeof window !== "undefined") {
       if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-claw.vercel.app") {
-        apiBase = "https://jovi-claw-production.up.railway.app";
+        apiBase = "https://jovi-claw-production-6270.up.railway.app";
       } else {
         apiBase = "http://localhost:3001";
       }
@@ -316,7 +316,7 @@ export default function ChatInterface({
   let apiBase = process.env.NEXT_PUBLIC_API_URL;
   if (!apiBase && typeof window !== "undefined") {
     if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-claw.vercel.app") {
-      apiBase = "https://jovi-claw-production.up.railway.app";
+      apiBase = "https://jovi-claw-production-6270.up.railway.app";
     } else {
       apiBase = "http://localhost:3001";
     }
