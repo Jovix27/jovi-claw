@@ -188,8 +188,19 @@ export default function ChatInterface({
     setInput("");
     setThinking(false);
 
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
     const token   = process.env.NEXT_PUBLIC_JOVI_SECRET || "";
+    
+    // Auto-detect production API if not set
+    let apiBase = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiBase && typeof window !== "undefined") {
+      if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-claw.vercel.app") {
+        apiBase = "https://jovi-claw-production.up.railway.app";
+      } else {
+        apiBase = "http://localhost:3001";
+      }
+    } else if (!apiBase) {
+      apiBase = "http://localhost:3001";
+    }
 
     const fetchHistory = async () => {
       try {
@@ -214,7 +225,18 @@ export default function ChatInterface({
 
   // Poll Remote Agent Status
   useEffect(() => {
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    // Auto-detect production API
+    let apiBase = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiBase && typeof window !== "undefined") {
+      if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-claw.vercel.app") {
+        apiBase = "https://jovi-claw-production.up.railway.app";
+      } else {
+        apiBase = "http://localhost:3001";
+      }
+    } else if (!apiBase) {
+      apiBase = "http://localhost:3001";
+    }
+
     const checkStatus = async () => {
       try {
         const res = await fetch(`${apiBase}/api/status`);
@@ -238,8 +260,19 @@ export default function ChatInterface({
 
   // Socket connection
   useEffect(() => {
-    const apiBase = process.env.NEXT_PUBLIC_API_URL    || "http://localhost:3001";
     const token   = process.env.NEXT_PUBLIC_JOVI_SECRET || "";
+
+    // Auto-detect production API if not set
+    let apiBase = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiBase && typeof window !== "undefined") {
+      if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-claw.vercel.app") {
+        apiBase = "https://jovi-claw-production.up.railway.app";
+      } else {
+        apiBase = "http://localhost:3001";
+      }
+    } else if (!apiBase) {
+      apiBase = "http://localhost:3001";
+    }
 
     const s = io(apiBase, { 
       auth: { token },
@@ -277,8 +310,19 @@ export default function ChatInterface({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   const token   = process.env.NEXT_PUBLIC_JOVI_SECRET || "";
+  
+  // Auto-detect production API
+  let apiBase = process.env.NEXT_PUBLIC_API_URL;
+  if (!apiBase && typeof window !== "undefined") {
+    if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-claw.vercel.app") {
+      apiBase = "https://jovi-claw-production.up.railway.app";
+    } else {
+      apiBase = "http://localhost:3001";
+    }
+  } else if (!apiBase) {
+    apiBase = "http://localhost:3001";
+  }
 
   const send = useCallback(async (files: File[] = []) => {
     if ((!input.trim() && files.length === 0) || !socket || thinking) return;
