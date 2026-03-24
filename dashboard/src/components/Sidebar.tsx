@@ -27,6 +27,8 @@ interface SidebarProps {
   activeThreadId: string;
   onThreadSelect: (t: string) => void;
   onOpenSettings: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 interface ActionLog {
@@ -56,6 +58,8 @@ export default function Sidebar({
   activeThreadId,
   onThreadSelect,
   onOpenSettings,
+  isOpen,
+  onClose,
 }: SidebarProps) {
   const [threads, setThreads] = useState<Array<{thread_id: string; title: string; updated_at: number}>>([]);
 
@@ -80,7 +84,9 @@ export default function Sidebar({
 
   return (
     <aside
-      className="flex flex-col w-52 h-full shrink-0 border-r border-white/[0.06]"
+      className={`fixed md:relative flex flex-col w-64 h-full shrink-0 border-r border-white/[0.06] z-50 transition-transform duration-300 ease-in-out ${
+        isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+      }`}
       style={{ background: "#111111" }}
     >
       {/* Brand */}

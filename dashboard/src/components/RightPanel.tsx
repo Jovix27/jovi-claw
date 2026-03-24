@@ -31,7 +31,7 @@ export default function RightPanel({ socket, onClose }: RightPanelProps) {
   if (actionLog.length === 0) return null;
 
   return (
-    <aside className="w-[450px] h-full border-l border-white/10 flex flex-col bg-[#1e1e1e] shrink-0">
+    <aside className="fixed inset-y-0 right-0 md:relative w-full md:w-[450px] h-full border-l border-white/10 flex flex-col bg-[#1e1e1e] shrink-0 z-50 transition-transform">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
         <div className="flex items-center gap-2">

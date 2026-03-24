@@ -14,6 +14,7 @@ export default function Home() {
   const [socket, setSocket]                 = useState<Socket | null>(null);
   const [activeThreadId, setActiveThreadId] = useState<string>("");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     // Client-side only init
@@ -39,6 +40,7 @@ export default function Home() {
 
   const handleViewChange = useCallback((v: "search" | "computer" | "agents" | "library" | "history") => {
     setActiveView(v);
+    setIsSidebarOpen(false); // Close sidebar on mobile after navigation
     if (v === "computer" || v === "agents") setComputerMode(true);
     else setComputerMode(false);
   }, []);
@@ -53,9 +55,19 @@ export default function Home() {
         onComputerModeToggle={handleComputerModeToggle}
         socket={socket}
         activeThreadId={activeThreadId}
-        onThreadSelect={handleThreadSelect}
-        onOpenSettings={() => setIsSettingsOpen(true)}
+        onThreadSelect={(t) => { handleThreadSelect(t); setIsSidebarOpen(false); }}
+        onOpenSettings={() => { setIsSettingsOpen(true); setIsSidebarOpen(false); }}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
+
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
       <div className="flex-1 flex flex-col min-w-0">
         {activeView === "history" ? (
           <HistoryView onThreadSelect={handleThreadSelect} />
@@ -65,6 +77,7 @@ export default function Home() {
             onComputerModeToggle={handleComputerModeToggle}
             onSocketReady={setSocket}
             activeThreadId={activeThreadId}
+            onMenuClick={() => setIsSidebarOpen(true)}
           />
         )}
       </div>

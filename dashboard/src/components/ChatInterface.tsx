@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, type ReactElement, type ReactNode } from "react";
-import { Send, Paperclip, Monitor, Mic, Loader2, Bot, User, Copy, Check, X } from "lucide-react";
+import { Send, Paperclip, Monitor, Mic, Loader2, Bot, User, Copy, Check, X, Menu } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 
 // ─── Types ────────────────────────────────────────────────
@@ -18,6 +18,7 @@ interface ChatInterfaceProps {
   onComputerModeToggle: () => void;
   onSocketReady: (socket: Socket) => void;
   activeThreadId: string;
+  onMenuClick?: () => void;
 }
 
 // ─── Suggestion data ──────────────────────────────────────
@@ -168,6 +169,7 @@ export default function ChatInterface({
   onComputerModeToggle,
   onSocketReady,
   activeThreadId,
+  onMenuClick,
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -291,6 +293,23 @@ export default function ChatInterface({
 
   return (
     <div className="flex-1 flex flex-col h-full min-w-0" style={{ background: "#141414" }}>
+      
+      {/* Mobile Top Bar */}
+      <header className="md:hidden flex items-center justify-between px-4 h-14 border-b border-white/[0.06] shrink-0 sticky top-0 z-30 bg-[#141414]/90 backdrop-blur-md">
+        <button 
+          onClick={onMenuClick}
+          className="p-2 -ml-2 text-[#888] hover:text-white transition-colors"
+        >
+          <Menu size={20} />
+        </button>
+        <span
+          className="text-xl text-[#e0e0e0] italic"
+          style={{ letterSpacing: "-0.02em", fontFamily: "var(--font-newsreader), serif" }}
+        >
+          jovi
+        </span>
+        <div className="w-8" /> {/* Spacer */}
+      </header>
 
       {/* ── Empty state ───────────────────────────────────── */}
       {!hasMessages && (
@@ -305,16 +324,18 @@ export default function ChatInterface({
           </h1>
 
           {/* Input */}
-          <InputBox
-            inputRef={inputRef}
-            value={input}
-            onChange={setInput}
-            onSend={send}
-            thinking={thinking}
-            computerMode={computerMode}
-            onComputerModeToggle={onComputerModeToggle}
-            wide
-          />
+          <div className="w-full max-w-2xl px-4 md:px-0">
+            <InputBox
+              inputRef={inputRef}
+              value={input}
+              onChange={setInput}
+              onSend={send}
+              thinking={thinking}
+              computerMode={computerMode}
+              onComputerModeToggle={onComputerModeToggle}
+              wide
+            />
+          </div>
 
           {/* Try Computer card */}
           <div className="w-full max-w-2xl mt-6 rounded-2xl border border-white/[0.08] overflow-hidden" style={{ background: "#1a1a1a" }}>
