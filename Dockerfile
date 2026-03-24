@@ -33,7 +33,11 @@ COPY src/ ./src/
 # Use the Railway-specific MCP config
 COPY mcp_config.railway.json ./mcp_config.json
 
-ENV NODE_ENV=production
+# Explicitly expose the port for Railway
+EXPOSE 3001
 
-# The bot uses long-polling only — no port needed.
-CMD ["./node_modules/.bin/tsx", "src/index.ts"]
+ENV NODE_ENV=production
+ENV PORT=3001
+
+# Start the bot and relay server
+CMD ["node", "--import", "tsx", "src/index.ts"]
