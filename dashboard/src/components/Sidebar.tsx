@@ -18,8 +18,8 @@ import {
 import { Socket } from "socket.io-client";
 
 interface SidebarProps {
-  activeView: "search" | "agents" | "library" | "history";
-  onViewChange: (v: "search" | "agents" | "library" | "history") => void;
+  activeView: "search" | "computer" | "agents" | "library" | "history";
+  onViewChange: (v: "search" | "computer" | "agents" | "library" | "history") => void;
   onNewThread: () => void;
   computerMode: boolean;
   onComputerModeToggle: () => void;
@@ -37,6 +37,7 @@ interface ActionLog {
 
 const MAIN_NAV = [
   { id: "search",   icon: Search,  label: "Search"   },
+  { id: "computer", icon: Monitor, label: "Computer" },
   { id: "agents",   icon: Bot,     label: "Agents"   },
   { id: "library",  icon: Library, label: "Library"  },
 ] as const;
@@ -97,7 +98,7 @@ export default function Sidebar({
         {MAIN_NAV.map(({ id, icon: Icon, label }) => (
           <button
             key={id}
-            onClick={() => onViewChange(id as "search" | "agents" | "library")}
+            onClick={() => onViewChange(id as "search" | "computer" | "agents" | "library")}
             className={`flex items-center gap-3 w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeView === id
                 ? "bg-white/10 text-white"
@@ -106,6 +107,9 @@ export default function Sidebar({
           >
             <Icon size={16} strokeWidth={1.8} />
             {label}
+            {id === "computer" && computerMode && (
+              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-purple-400" />
+            )}
             {id === "agents" && (
               <span className="ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-400 uppercase tracking-widest">New</span>
             )}
@@ -170,20 +174,8 @@ export default function Sidebar({
         </div>
       )}
 
-      {/* Bottom — Agent Mode + Settings + Boss Avatar */}
+      {/* Bottom — Settings + Boss Avatar */}
       <div className="mt-auto px-4 pb-5 flex flex-col gap-3">
-        <button
-          onClick={onComputerModeToggle}
-          className={`flex items-center gap-3 w-full px-3 py-2 -ml-1 rounded-lg text-sm font-medium transition-colors ${
-            computerMode
-              ? "bg-purple-500/15 text-purple-300 border border-purple-500/20"
-              : "text-[#888] hover:bg-white/5 hover:text-white"
-          }`}
-        >
-          <Zap size={16} strokeWidth={1.8} />
-          Agent Mode
-          {computerMode && <ChevronRight size={12} className="ml-auto opacity-50" />}
-        </button>
 
         <button 
           onClick={onOpenSettings}

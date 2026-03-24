@@ -9,7 +9,7 @@ import HistoryView from "@/components/HistoryView";
 import RightPanel from "@/components/RightPanel";
 
 export default function Home() {
-  const [activeView, setActiveView]         = useState<"search" | "agents" | "library" | "history">("search");
+  const [activeView, setActiveView]         = useState<"search" | "computer" | "agents" | "library" | "history">("search");
   const [computerMode, setComputerMode]     = useState(false);
   const [socket, setSocket]                 = useState<Socket | null>(null);
   const [activeThreadId, setActiveThreadId] = useState<string>("");
@@ -37,9 +37,9 @@ export default function Home() {
     setActiveView("search");
   }, []);
 
-  const handleViewChange = useCallback((v: "search" | "agents" | "library" | "history") => {
+  const handleViewChange = useCallback((v: "search" | "computer" | "agents" | "library" | "history") => {
     setActiveView(v);
-    if (v === "agents") setComputerMode(true);
+    if (v === "computer" || v === "agents") setComputerMode(true);
     else setComputerMode(false);
   }, []);
 
