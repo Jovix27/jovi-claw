@@ -3,6 +3,7 @@ import express from "express";
 import { createServer } from "node:http";
 import { Server as SocketIOServer } from "socket.io";
 import crypto from "node:crypto";
+import cors from "cors";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
@@ -178,15 +179,7 @@ export function startRelayServer(secret: string, port: number): void {
     app.use(express.json());
 
     // ─── Middleware: CORS ─────────────────────────────────
-    app.use((req, res, next) => {
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-        res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        if (req.method === "OPTIONS") {
-            return res.sendStatus(200);
-        }
-        next();
-    });
+    app.use(cors({ origin: "*", methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"], allowedHeaders: ["Content-Type", "Authorization"] }));
 
     // ─── Middleware: Simple Bearer Auth (for REST) ────────
     const authMiddleware = (_req: any, res: any, next: any) => {
