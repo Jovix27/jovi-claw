@@ -1,0 +1,66 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run start:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx tsx:*)",
+      "Bash(npx:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git status:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(echo:*)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
+      "Bash(powershell:*)",
+      "Bash(railway:*)",
+      "Read(//c/Users/brigh/.claude/projects/e--Company-Green-Build-AI-R-D-Jovi-Claw/memory/**)",
+      "Bash(test -f \"/e/Company/Green Build AI/R&D/Jovi Claw/src/bot/web-bridge.ts\")"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Jovi Claw] Running: $CLAUDE_TOOL_INPUT_COMMAND'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Jovi Claw] File saved. Remember: use .js extensions on ESM imports.'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show('Jovi Claw: Claude done. Ready, Boss.', 'Claude Code', 'OK', 'Information')\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

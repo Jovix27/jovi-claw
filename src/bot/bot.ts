@@ -7,9 +7,12 @@ import type { AgentResult } from "../agent/loop.js";
 import { transcribeVoice } from "../voice/transcribe.js";
 import { logger } from "../utils/logger.js";
 import { handleSetupStart, handleSetupAnswer } from "../utils/onboarding.js";
-import { checkRateLimit, retryAfterSeconds } from "../security/rate-limiter.js";
+import { checkRateLimit, retryAfterSeconds, isSoftBanned } from "../security/rate-limiter.js";
 import { validateUserInput } from "../security/input-validator.js";
 import { audit } from "../security/audit-logger.js";
+import { recordThreat, isBanned } from "../security/threat-detector.js";
+import { checkHoneypot } from "../security/honeypot.js";
+import { filterOutput } from "../security/output-filter.js";
 
 /**
  * Creates and configures the grammY Telegram bot.
@@ -31,28 +34,53 @@ export function createBot(): Bot {
     bot.on("message:text", async (ctx) => {
         const userId = ctx.from.id;
 
-        // Rate limiting
+        // ── Shield: hard-ban check ──────────────────────────
+        if (isBanned(userId)) {
+            // Silent drop — banned users get no response
+            audit.record({ action: "auth_blocked", userId, detail: { reason: "banned" } });
+            return;
+        }
+
+        // ── Shield: soft-ban check ──────────────────────────
+        if (isSoftBanned(userId)) {
+            const wait = retryAfterSeconds(userId);
+            await ctx.reply(`🔒 You've been temporarily blocked for ${wait}s due to repeated violations.`);
+            return;
+        }
+
+        // ── Rate limiting ───────────────────────────────────
         if (!checkRateLimit(userId)) {
             const wait = retryAfterSeconds(userId);
             audit.rateLimited(userId, wait);
+            recordThreat(userId, "rate_limit_exceeded", `retry_after=${wait}s`);
             await ctx.reply(`⏳ Too many messages. Please wait ${wait}s before sending again.`);
             return;
         }
 
         const rawMessage = ctx.message.text;
 
-        // Input validation + prompt-injection check
+        // ── Input validation + injection check ─────────────
         const validation = validateUserInput(rawMessage);
         if (!validation.ok) {
             audit.inputRejected(userId, validation.reason ?? "unknown");
-            if (validation.reason?.includes("injection")) {
+            if (validation.isInjection) {
                 audit.injectionAttempt(userId);
+                recordThreat(userId, "injection_attempt", validation.reason);
+            } else {
+                recordThreat(userId, "repeated_rejection", validation.reason);
             }
             await ctx.reply("⚠️ Your message could not be processed. Please rephrase and try again.");
             return;
         }
 
         const userMessage = validation.sanitised!;
+
+        // ── Honeypot trap check ─────────────────────────────
+        const honeypot = checkHoneypot(userMessage, userId);
+        if (honeypot.triggered) {
+            await ctx.reply(honeypot.decoyResponse!);
+            return;
+        }
 
         // Try intercepting for onboarding first
         const isSetupHandled = await handleSetupAnswer(ctx, userMessage);
@@ -64,6 +92,14 @@ export function createBot(): Bot {
 
         try {
             const result = await runAgentLoop(userMessage, userId);
+
+            // ── Output safety filter ────────────────────────
+            const filtered = filterOutput(result.text, userId);
+            if (!filtered.safe) {
+                audit.record({ action: "input_rejected", userId, detail: { reason: "output_filter", violations: filtered.violations } });
+            }
+            result.text = filtered.filtered;
+
             await sendAgentResult(ctx, result);
         } catch (error) {
             logger.error("Agent loop failed.", {
@@ -77,10 +113,12 @@ export function createBot(): Bot {
     bot.on("message:voice", async (ctx) => {
         const userId = ctx.from.id;
 
-        // Rate limiting applies to voice too
+        if (isBanned(userId) || isSoftBanned(userId)) return;
+
         if (!checkRateLimit(userId)) {
             const wait = retryAfterSeconds(userId);
             audit.rateLimited(userId, wait);
+            recordThreat(userId, "rate_limit_exceeded");
             await ctx.reply(`⏳ Too many messages. Please wait ${wait}s.`);
             return;
         }
@@ -134,8 +172,11 @@ export function createBot(): Bot {
     bot.on("message:photo", async (ctx) => {
         const userId = ctx.from.id;
 
+        if (isBanned(userId) || isSoftBanned(userId)) return;
+
         if (!checkRateLimit(userId)) {
             const wait = retryAfterSeconds(userId);
+            recordThreat(userId, "rate_limit_exceeded");
             await ctx.reply(`⏳ Too many messages. Please wait ${wait}s.`);
             return;
         }
@@ -180,8 +221,11 @@ export function createBot(): Bot {
     bot.on("message:document", async (ctx) => {
         const userId = ctx.from.id;
 
+        if (isBanned(userId) || isSoftBanned(userId)) return;
+
         if (!checkRateLimit(userId)) {
             const wait = retryAfterSeconds(userId);
+            recordThreat(userId, "rate_limit_exceeded");
             await ctx.reply(`⏳ Too many messages. Please wait ${wait}s.`);
             return;
         }

@@ -45,6 +45,14 @@
         "zapier": {
             "disabled": true,
             "url": "https://mcp.zapier.com/api/v1/connect?token=f578ec09-d9f7-41ec-8a71-4a169b128537"
+        },
+        "filesystem": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-filesystem",
+                "e:/Company/Green Build AI/Prototypes/BuildSight"
+            ]
         }
     }
 }

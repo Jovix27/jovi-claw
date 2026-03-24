@@ -1,11 +1,15 @@
 import { WebSocketServer, WebSocket } from "ws";
-import http from "node:http";
+import express from "express";
+import { createServer } from "node:http";
+import { Server as SocketIOServer } from "socket.io";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { logger } from "./logger.js";
 import { audit } from "../security/audit-logger.js";
+import { filterOutput } from "../security/output-filter.js";
+import { setWebBridgeIO, broadcastActionLog } from "../bot/web-bridge.js";
 
 // ─── Types ──────────────────────────────────────────────
 interface PendingRequest {
@@ -14,8 +18,20 @@ interface PendingRequest {
     timer: ReturnType<typeof setTimeout>;
 }
 
+export type RemoteCommandType =
+    | "execute" | "screenshot" | "keyboard" | "mouse" | "camera"
+    | "clipboard_get" | "clipboard_set"
+    | "file_read" | "file_write" | "file_list"
+    | "process_list" | "process_kill"
+    | "notify" | "open" | "system_info"
+    // Computer Use additions
+    | "scroll" | "window_list" | "window_focus"
+    | "browser_navigate" | "browser_screenshot"
+    | "browser_click" | "browser_type" | "browser_scroll"
+    | "browser_back" | "browser_eval";
+
 interface RemoteRequest {
-    type: "execute" | "screenshot" | "keyboard" | "mouse" | "camera";
+    type: RemoteCommandType;
     id: string;
     [key: string]: unknown;
 }
@@ -32,11 +48,21 @@ interface RemoteResult {
 
 // ─── State ──────────────────────────────────────────────
 let wss: WebSocketServer | null = null;
-let httpServer: http.Server | null = null;
+let io: SocketIOServer | null = null;
+let httpServer: any | null = null;
 let agentSocket: WebSocket | null = null;
 let bootstrapperSocket: WebSocket | null = null;
 const pending = new Map<string, PendingRequest>();
 const DEFAULT_TIMEOUT_MS = 30_000;
+let agentConnectedCallback: (() => Promise<void>) | null = null;
+
+/**
+ * Register a callback that fires whenever the remote agent (PC) connects.
+ * Used by index.ts to auto-enable agent mode and notify Boss on Telegram.
+ */
+export function setAgentConnectedCallback(fn: () => Promise<void>): void {
+    agentConnectedCallback = fn;
+}
 
 // ─── Public API ─────────────────────────────────────────
 
@@ -70,7 +96,7 @@ export async function triggerBootstrapper(): Promise<boolean> {
  * For camera: {} (no params)
  */
 export function sendRemoteRequest(
-    requestType: RemoteRequest["type"],
+    requestType: RemoteCommandType,
     params: Record<string, unknown> = {},
     timeoutMs: number = DEFAULT_TIMEOUT_MS
 ): Promise<RemoteResult> {
@@ -140,69 +166,232 @@ export function saveImageFromResult(result: RemoteResult, prefix: string = "jovi
 }
 
 /**
- * Start the WebSocket relay server.
+ * Start the Unified Relay & Dashboard Server.
  */
 export function startRelayServer(secret: string, port: number): void {
-    if (wss) {
+    if (httpServer) {
         logger.warn("Relay server already running.");
         return;
     }
 
-    httpServer = http.createServer(async (req, res) => {
-        // Handle tool relay via POST
-        if (req.method === "POST" && req.url === "/relay") {
-            let body = "";
-            req.on("data", chunk => body += chunk);
-            req.on("end", async () => {
-                try {
-                    const data = JSON.parse(body);
-                    if (data.secret !== secret && secret !== "") {
-                        res.writeHead(401);
-                        return res.end(JSON.stringify({ error: "Unauthorized" }));
-                    }
+    const app = express();
+    app.use(express.json());
 
-                    const { tool, args, userId } = data;
-                    if (!tool) {
-                        res.writeHead(400);
-                        return res.end(JSON.stringify({ error: "Missing tool name" }));
-                    }
+    // ─── Middleware: CORS ─────────────────────────────────
+    app.use((req, res, next) => {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+        res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        if (req.method === "OPTIONS") {
+            return res.sendStatus(200);
+        }
+        next();
+    });
 
-                    // Import tools dynamically to avoid circular deps if needed
-                    const { executeTool } = await import("../tools/index.js");
-                    const result = await executeTool(tool, args || {}, userId || 0);
-                    
-                    res.writeHead(200, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({ status: "ok", result }));
-                } catch (e: any) {
-                    res.writeHead(500);
-                    res.end(JSON.stringify({ error: e.message }));
-                }
-            });
+    // ─── Middleware: Simple Bearer Auth (for REST) ────────
+    const authMiddleware = (_req: any, res: any, next: any) => {
+        const authHeader = _req.headers.authorization;
+        const urlToken = _req.query.token as string;
+        const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : urlToken;
+
+        if (token !== secret && secret !== "") {
+            logger.warn(`🚫 Unauthorized API access attempt from ${_req.ip}`);
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+        next();
+    };
+
+    // ─── Image Proxy: Serve local images to Web App ────────
+    const imageHandler = (req: any, res: any) => {
+        const imagePath = req.query.path as string;
+        if (!imagePath) return res.status(400).json({ error: "No path provided" });
+
+        // Security check: Only allow paths within typical temp/project dirs
+        if (!imagePath.includes("temp") && !imagePath.includes("Jovi Claw")) {
+            return res.status(403).json({ error: "Access denied" });
+        }
+
+        res.sendFile(imagePath);
+    };
+    app.get("/api/image", authMiddleware, imageHandler);
+    app.get("/api/proxy-image", authMiddleware, imageHandler); // Dashboard alias
+
+    // ─── EXISTING: Remote Tool Relay (POST) ───────────────
+    app.post("/relay", authMiddleware, async (req, res) => {
+        try {
+            const { tool, args, userId } = req.body;
+            if (!tool) return res.status(400).json({ error: "Missing tool name" });
+
+            const { executeTool } = await import("../tools/index.js");
+            const result = await executeTool(tool, args || {}, userId || 0);
+
+            res.json({ status: "ok", result });
+        } catch (e: any) {
+            res.status(500).json({ error: e.message });
+        }
+    });
+
+    // ─── NEW: Dashboard API Status ────────────────────────
+    app.get("/api/status", (_req, res) => {
+        res.json({
+            status: "online",
+            agent_connected: isRemoteAgentConnected(),
+            bootstrapper_connected: isRemoteBootstrapperConnected(),
+            version: "1.0.0"
+        });
+    });
+
+    // ─── NEW: History API ─────────────────────────────
+    app.get("/api/history", authMiddleware, async (req, res) => {
+        try {
+            const { getHistoryThreads } = await import("./memory.js");
+            // Default to the first allowed user ID if no specific user requested
+            let userId = Number(req.query.userId);
+            if (!userId && process.env.ALLOWED_USER_IDS) {
+                userId = parseInt(process.env.ALLOWED_USER_IDS.split(",")[0], 10);
+            }
+            if (!userId) userId = 0;
+            
+            const threads = await getHistoryThreads(userId);
+            res.json({ status: "ok", threads });
+        } catch (e: any) {
+            res.status(500).json({ error: e.message });
+        }
+    });
+
+    // ─── NEW: Settings / Memory API ────────────────────────
+    app.get("/api/settings", authMiddleware, async (req, res) => {
+        try {
+            const { getCoreMemory } = await import("./memory.js");
+            let userId = Number(req.query.userId) || 0;
+            if (userId === 0 && process.env.ALLOWED_USER_IDS) {
+                userId = parseInt(process.env.ALLOWED_USER_IDS.split(",")[0], 10);
+            }
+            const memory = await getCoreMemory(userId);
+            const customInstructions = memory.find((m: any) => m.fact_key === "custom_instructions")?.fact_value || "";
+            res.json({ status: "ok", customInstructions });
+        } catch (e: any) {
+            res.status(500).json({ error: e.message });
+        }
+    });
+
+    app.post("/api/settings", authMiddleware, async (req, res) => {
+        try {
+            const { setCoreMemory } = await import("./memory.js");
+            const { customInstructions } = req.body;
+            let userId = Number(req.body.userId) || 0;
+            if (userId === 0 && process.env.ALLOWED_USER_IDS) {
+                userId = parseInt(process.env.ALLOWED_USER_IDS.split(",")[0], 10);
+            }
+            await setCoreMemory(userId, "custom_instructions", customInstructions || "");
+            res.json({ status: "ok" });
+        } catch (e: any) {
+            res.status(500).json({ error: e.message });
+        }
+    });
+
+    app.get("/api/history/:threadId", authMiddleware, async (req, res) => {
+        try {
+            const { getRecentBuffer } = await import("./memory.js");
+            let userId = Number(req.query.userId);
+            if (!userId && process.env.ALLOWED_USER_IDS) {
+                userId = parseInt(process.env.ALLOWED_USER_IDS.split(",")[0], 10);
+            }
+            if (!userId) userId = 0;
+            
+            const threadId = req.params.threadId;
+            const messages = await getRecentBuffer(userId, 50, threadId); 
+            // the web side will need it chronological, getRecentBuffer already does this
+            res.json({ status: "ok", messages });
+        } catch (e: any) {
+            res.status(500).json({ error: e.message });
+        }
+    });
+
+    // ─── NEW: Dashboard Chat API (Socket.io bridge) ───────
+    // Handled via Socket.io below, but we can also add a REST endpoint
+    app.post("/api/chat", authMiddleware, async (req, res) => {
+        try {
+            const { text, userId } = req.body;
+            const { runAgentLoop } = await import("../agent/loop.js");
+            const result = await runAgentLoop(text, userId || 0);
+            const filtered = filterOutput(result.text, userId || 0);
+            res.json({ ...result, text: filtered.filtered });
+        } catch (e: any) {
+            res.status(500).json({ error: e.message });
+        }
+    });
+
+    httpServer = createServer(app);
+
+    // ─── Socket.io (for Dashboard real-time events) ───────
+    io = new SocketIOServer(httpServer, {
+        cors: { origin: "*", methods: ["GET", "POST"] }
+    });
+    setWebBridgeIO(io);
+
+    io.on("connection", (socket) => {
+        // Authenticate Socket.io connection
+        const token = socket.handshake.auth.token || socket.handshake.query.token;
+        if (token !== secret && secret !== "") {
+            logger.warn("🚫 Unauthorized Dashboard Socket connection rejected.");
+            socket.disconnect();
             return;
         }
 
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({
-            status: "ok",
-            agent_connected: isRemoteAgentConnected(),
-        }));
+        logger.info("✅ Jovi Dashboard connected!", { id: socket.id });
+
+        socket.on("message", async (data: { text: string; userId?: number; threadId?: string; files?: any[] }) => {
+            try {
+                const { runAgentLoop } = await import("../agent/loop.js");
+                socket.emit("status", { type: "thinking" });
+                
+                let userId = data.userId;
+                if (!userId && process.env.ALLOWED_USER_IDS) {
+                    userId = parseInt(process.env.ALLOWED_USER_IDS.split(",")[0], 10);
+                }
+                if (!userId) userId = 0;
+
+                const result = await runAgentLoop(data.text, userId, 0, (event) => {
+                    // Pipe tool results and vision updates to the Dashboard live
+                    socket.emit("progress", event);
+                }, data.threadId || "default", data.files);
+                const filtered = filterOutput(result.text, userId);
+                socket.emit("message", { ...result, text: filtered.filtered, role: "assistant" });
+                socket.emit("status", { type: "idle" });
+            } catch (err) {
+                socket.emit("error", { message: "Agent loop failed" });
+            }
+        });
     });
 
-    wss = new WebSocketServer({ server: httpServer, maxPayload: 20 * 1024 * 1024 }); // 20MB for screenshots
+    // ─── EXISTING: Remote PC Agent WebSocket (ws) ──────────
+    wss = new WebSocketServer({ noServer: true });
+
+    httpServer.on("upgrade", (request: any, socket: any, head: any) => {
+        const url = new URL(request.url ?? "/", `http://${request.headers.host}`);
+        const pathname = url.pathname;
+
+        // Route to WS if it's the agent connection
+        if (pathname === "/" || pathname === "/ws") {
+            wss!.handleUpgrade(request, socket, head, (ws) => {
+                wss!.emit("connection", ws, request);
+            });
+        }
+    });
 
     wss.on("connection", (ws, req) => {
         const url = new URL(req.url ?? "/", `http://${req.headers.host}`);
         const clientIp = req.socket.remoteAddress ?? "unknown";
 
-        // Support both URL token and Authorization header (header preferred for security)
         const urlToken = url.searchParams.get("token");
         const authHeader = req.headers.authorization;
         const headerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
         const token = headerToken ?? urlToken;
 
-        const type = url.searchParams.get("type") || "agent"; // 'agent' or 'bootstrapper'
+        const type = url.searchParams.get("type") || "agent";
 
-        if (token !== secret) {
+        if (token !== secret && secret !== "") {
             logger.warn(`🚫 Remote ${type} connection rejected — invalid token.`, { ip: clientIp });
             audit.record({ action: "auth_blocked", detail: { type, ip: clientIp, reason: "invalid_token" } });
             ws.close(4001, "Unauthorized");
@@ -211,40 +400,37 @@ export function startRelayServer(secret: string, port: number): void {
 
         if (type === "bootstrapper") {
             if (bootstrapperSocket && bootstrapperSocket.readyState === WebSocket.OPEN) {
-                logger.warn("⚠️ Replacing existing bootstrapper connection.");
                 bootstrapperSocket.close(4002, "Replaced");
             }
             bootstrapperSocket = ws;
             logger.info("✅ Remote Bootstrapper connected!", { ip: clientIp });
         } else {
             if (agentSocket && agentSocket.readyState === WebSocket.OPEN) {
-                logger.warn("⚠️ Replacing existing remote agent connection.");
                 agentSocket.close(4002, "Replaced by new connection");
             }
             agentSocket = ws;
             logger.info("✅ Remote PC agent connected!", { ip: clientIp });
             audit.remoteAgentConnected(clientIp);
+            broadcastActionLog("Agent Connected", `PC agent online from ${clientIp}`);
+            if (agentConnectedCallback) {
+                agentConnectedCallback().catch((err) =>
+                    logger.error("Agent-connected callback failed.", { error: err instanceof Error ? err.message : String(err) })
+                );
+            }
         }
 
         ws.on("message", (data) => {
             try {
                 const msg = JSON.parse(data.toString()) as RemoteResult;
-
                 if (msg.type === "result" && msg.id) {
                     const req = pending.get(msg.id);
                     if (req) {
                         clearTimeout(req.timer);
                         pending.delete(msg.id);
                         req.resolve(msg);
-                        const hasImg = msg.imageData ? " [+image]" : "";
-                        logger.debug(`📥 Remote result [${msg.id.slice(0, 8)}] exitCode=${msg.exitCode}${hasImg}`);
                     }
                 }
-            } catch (err) {
-                logger.warn("Failed to parse message from remote agent.", {
-                    error: err instanceof Error ? err.message : String(err),
-                });
-            }
+            } catch { }
         });
 
         ws.on("close", (code, reason) => {
@@ -257,20 +443,15 @@ export function startRelayServer(secret: string, port: number): void {
             if (ws === bootstrapperSocket) bootstrapperSocket = null;
         });
 
-        ws.on("error", (err) => {
-            logger.error("Remote agent WebSocket error.", { error: err.message });
-        });
-
         const pingInterval = setInterval(() => {
             if (ws.readyState === WebSocket.OPEN) ws.ping();
             else clearInterval(pingInterval);
         }, 25_000);
-
         ws.on("close", () => clearInterval(pingInterval));
     });
 
     httpServer.listen(port, () => {
-        logger.info(`📡 Remote control relay server listening on port ${port}`);
+        logger.info(`📡 Unified Jovi Server (Relay + Dashboard) live on port ${port}`);
     });
 }
 

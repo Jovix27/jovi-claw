@@ -12,24 +12,28 @@
 import { maskSecrets } from "./secret-masker.js";
 
 export type AuditAction =
-    | "auth_blocked"          // unauthorized user blocked
-    | "rate_limited"          // user hit rate limit
-    | "input_rejected"        // input failed validation
-    | "injection_attempt"     // prompt injection detected
+    | "auth_blocked"              // unauthorized user blocked
+    | "rate_limited"              // user hit rate limit
+    | "soft_banned"               // user soft-banned after repeated violations
+    | "input_rejected"            // input failed validation
+    | "injection_attempt"         // prompt injection detected
+    | "threat_elevated"           // threat level increased
+    | "attacker_banned"           // entity permanently banned
     | "agent_loop_started"
     | "agent_loop_completed"
     | "tool_called"
     | "tool_failed"
     | "mcp_connected"
     | "mcp_disconnected"
-    | "secret_in_log_blocked" // secret masker fired
-    | "heartbeat_started"     // daily heartbeat initiated
-    | "heartbeat_completed"   // heartbeat sent successfully
-    | "heartbeat_failed"      // heartbeat failed
-    | "command_blocked"       // dangerous remote command blocked
-    | "command_executed"      // remote command executed
-    | "remote_agent_connected"    // remote PC agent connected
-    | "remote_agent_disconnected" // remote PC agent disconnected
+    | "secret_in_log_blocked"     // secret masker fired
+    | "heartbeat_started"
+    | "heartbeat_completed"
+    | "heartbeat_failed"
+    | "command_blocked"           // dangerous remote command blocked
+    | "command_executed"          // remote command executed
+    | "remote_agent_connected"
+    | "remote_agent_disconnected"
+    | "relay_auth_failed"         // relay WebSocket rejected invalid token
     | "startup"
     | "shutdown";
 

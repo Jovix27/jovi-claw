@@ -9,9 +9,17 @@ interface CoreFact {
 
 interface BufferMessage {
     id: number;
+    user_id: number;
+    thread_id: string;
     role: "user" | "assistant" | "system" | "tool";
     content: string;
     timestamp: number;
+}
+
+export interface ChatThread {
+    thread_id: string;
+    title: string;
+    updated_at: number;
 }
 
 let db: Client | null = null;
@@ -39,11 +47,17 @@ export async function initMemoryDB() {
         CREATE TABLE IF NOT EXISTS conversation_buffer (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
+            thread_id TEXT NOT NULL DEFAULT 'default',
             role TEXT NOT NULL,
             content TEXT NOT NULL,
             timestamp INTEGER NOT NULL
         );
     `);
+
+    try {
+        await db.execute("ALTER TABLE conversation_buffer ADD COLUMN thread_id TEXT NOT NULL DEFAULT 'default';");
+        logger.info("Migrated conversation_buffer to include thread_id");
+    } catch {} // Ignore error if column already exists
 
     await db.execute(`
         CREATE INDEX IF NOT EXISTS idx_buffer_user ON conversation_buffer(user_id);
@@ -92,43 +106,66 @@ export async function deleteCoreMemory(userId: number, key: string) {
 
 // ─── Conversation Buffer ─────────────────────────────────────────────────────
 
-export async function addMessageToBuffer(userId: number, role: "user" | "assistant" | "system" | "tool", content: string) {
+export async function addMessageToBuffer(userId: number, role: "user" | "assistant" | "system" | "tool", content: string, threadId: string = "default") {
     if (!db) await initMemoryDB();
     await db!.execute({
-        sql: "INSERT INTO conversation_buffer (user_id, role, content, timestamp) VALUES (?, ?, ?, ?)",
-        args: [userId, role, content, Date.now()]
+        sql: "INSERT INTO conversation_buffer (user_id, thread_id, role, content, timestamp) VALUES (?, ?, ?, ?, ?)",
+        args: [userId, threadId, role, content, Date.now()]
     });
 }
 
-export async function getRecentBuffer(userId: number, limit: number = 20): Promise<BufferMessage[]> {
+export async function getRecentBuffer(userId: number, limit: number = 20, threadId: string = "default"): Promise<BufferMessage[]> {
     if (!db) await initMemoryDB();
     const result = await db!.execute({
         sql: `
-            SELECT id, role, content, timestamp 
+            SELECT id, user_id, thread_id, role, content, timestamp 
             FROM conversation_buffer 
-            WHERE user_id = ? 
+            WHERE user_id = ? AND thread_id = ?
             ORDER BY timestamp DESC 
             LIMIT ?
         `,
-        args: [userId, limit]
+        args: [userId, threadId, limit]
     });
 
     const msgs = result.rows as unknown as BufferMessage[];
     return msgs.reverse();
 }
 
-export async function compactBufferFallback(userId: number, keepCount: number = 20) {
+export async function compactBufferFallback(userId: number, keepCount: number = 20, threadId: string = "default") {
     if (!db) await initMemoryDB();
     await db!.execute({
         sql: `
             DELETE FROM conversation_buffer 
             WHERE id IN (
                 SELECT id FROM conversation_buffer 
-                WHERE user_id = ? 
+                WHERE user_id = ? AND thread_id = ?
                 ORDER BY timestamp DESC 
                 LIMIT -1 OFFSET ?
             )
         `,
-        args: [userId, keepCount]
+        args: [userId, threadId, keepCount]
     });
+}
+
+export async function getHistoryThreads(userId: number): Promise<ChatThread[]> {
+    if (!db) await initMemoryDB();
+    const result = await db!.execute({
+        sql: `
+            SELECT 
+                thread_id,
+                MAX(timestamp) as updated_at,
+                (SELECT content FROM conversation_buffer b2 WHERE b2.user_id = b1.user_id AND b2.thread_id = b1.thread_id AND b2.role = 'user' ORDER BY id ASC LIMIT 1) as title
+            FROM conversation_buffer b1
+            WHERE user_id = ?
+            GROUP BY thread_id
+            ORDER BY updated_at DESC
+        `,
+        args: [userId]
+    });
+
+    return result.rows.map(row => ({
+        thread_id: String(row.thread_id),
+        title: String(row.title || "New Conversation"),
+        updated_at: Number(row.updated_at)
+    }));
 }

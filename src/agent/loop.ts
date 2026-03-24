@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import { chat } from "../llm/claude.js";
 import type { ChatMessage } from "../llm/claude.js";
 import { getToolDefinitions, executeTool } from "../tools/index.js";
@@ -8,6 +9,37 @@ import { storeSemanticMemory } from "../utils/semantic.js";
 import { audit } from "../security/audit-logger.js";
 
 import { config } from "../config/env.js";
+
+// ─── Vision-in-loop helper ───────────────────────────────
+/**
+ * Build a synthetic user message containing the screenshot as an inline image.
+ * Injected immediately after the tool result message so the LLM can "see" the screen.
+ * Works with all providers (Mistral, Gemini, OpenRouter) — universal user-role image support.
+ */
+function buildVisionInjection(result: string): object | null {
+    let imagePath: string | null = null;
+    try {
+        const parsed = JSON.parse(result);
+        imagePath = parsed.imagePath ?? parsed.imageFile ?? null;
+    } catch { return null; }
+
+    if (!imagePath || !fs.existsSync(imagePath)) return null;
+
+    try {
+        const ext = imagePath.toLowerCase().endsWith(".jpg") ? "image/jpeg" : "image/png";
+        const base64 = fs.readFileSync(imagePath).toString("base64");
+        return {
+            role: "user",
+            content: [
+                { type: "text", text: "📸 Screenshot captured. Analyze it to decide the next action." },
+                { type: "image_url", image_url: { url: `data:${ext};base64,${base64}`, detail: "high" } },
+            ],
+        };
+    } catch (err) {
+        logger.warn("Vision injection: could not read image file.", { imagePath, err });
+        return null;
+    }
+}
 
 // ─── Safety limits ──────────────────────────────────────
 const MAX_ITERATIONS = config.security.godMode ? 100 : 10;
@@ -33,7 +65,10 @@ export interface AgentResult {
 export async function runAgentLoop(
     userMessage: string,
     _userId: number,
-    iterations: number = 0
+    iterations: number = 0,
+    onProgress?: (event: { type: string; [key: string]: any }) => void,
+    threadId: string = "default",
+    files?: any[]
 ): Promise<AgentResult> {
     const tools = await getToolDefinitions(_userId);
     const voiceFiles: string[] = [];
@@ -43,18 +78,42 @@ export async function runAgentLoop(
         audit.agentLoopStarted(_userId);
         // Only add user message to SQLite buffer if it's the first turn
         if (userMessage) {
-            await addMessageToBuffer(_userId, "user", userMessage);
+            await addMessageToBuffer(_userId, "user", userMessage, threadId);
         }
     }
 
     // Build the message history for this turn from recent DB buffer
-    const recentHistory = await getRecentBuffer(_userId, 20);
+    const recentHistory = await getRecentBuffer(_userId, 20, threadId);
     const messages: ChatMessage[] = recentHistory
         .filter((m: any) => m.role === "user" || m.role === "assistant")
         .map((m: any) => ({
             role: m.role as any,
             content: m.content
         }));
+
+    // If there are files attached in the current turn, inject them into the last user message
+    if (iterations === 0 && files && files.length > 0) {
+        const lastUserIdx = messages.findLastIndex(m => m.role === "user");
+        if (lastUserIdx !== -1) {
+            const originalText = messages[lastUserIdx].content as string;
+            const contentArray: any[] = [{ type: "text", text: originalText }];
+            
+            for (const f of files) {
+                if (f.type.startsWith("image/")) {
+                    contentArray.push({
+                        type: "image_url",
+                        image_url: { url: f.data }
+                    });
+                } else {
+                    contentArray.push({
+                        type: "text",
+                        text: `\n[Attached File: ${f.name} (type: ${f.type})]\nNote: Native document parsing for this format is routed here. If supported by the LLM, the data is passed as base64.`
+                    });
+                }
+            }
+            messages[lastUserIdx].content = contentArray as any;
+        }
+    }
 
     for (let currentIter = 0; currentIter < MAX_ITERATIONS; currentIter++) {
         logger.debug(`Agent loop iteration ${currentIter + 1}/${MAX_ITERATIONS}`);
@@ -107,10 +166,18 @@ export async function runAgentLoop(
                 }
 
                 logger.info(`Tool call: ${fnName}`);
-                audit.toolCalled(_userId, fnName);
-
                 const result = await executeTool(fnName, fnArgs, _userId);
-                await addMessageToBuffer(_userId, "tool", result);
+                await addMessageToBuffer(_userId, "tool", result, threadId);
+
+                // Report tool result to progress callback
+                if (onProgress) {
+                    onProgress({ 
+                        type: "tool_result", 
+                        tool: fnName, 
+                        result,
+                        id: toolCall.id 
+                    });
+                }
 
                 try {
                     const parsed = JSON.parse(result);
@@ -124,6 +191,10 @@ export async function runAgentLoop(
                     name: fnName,  // <--- Some LLMs require the tool name here
                     content: result,
                 } as any);
+
+                // Vision-in-loop: if tool returned a screenshot, inject it so the LLM can see it
+                const visionMsg = buildVisionInjection(result);
+                if (visionMsg) messages.push(visionMsg as any);
             }
             continue;
         }
@@ -144,7 +215,7 @@ export async function runAgentLoop(
                 // LLM wrapped plain reply in {"text": "..."} — unwrap it
                 if (parsed.text && typeof parsed.text === "string" && Object.keys(parsed).length === 1) {
                     const unwrapped = parsed.text;
-                    await addMessageToBuffer(_userId, "assistant", unwrapped);
+                    await addMessageToBuffer(_userId, "assistant", unwrapped, threadId);
                     audit.agentLoopCompleted(_userId, iterations + 1);
                     extractFactsInBackground(_userId, userMessage, unwrapped);
                     return { text: unwrapped, voiceFiles, imageFiles };
@@ -158,13 +229,13 @@ export async function runAgentLoop(
                     });
 
                     // Add the assistant's intermediate thought to history
-                    await addMessageToBuffer(_userId, "assistant", text);
+                    await addMessageToBuffer(_userId, "assistant", text, threadId);
 
                     // Add the warning message as a system/tool error
-                    await addMessageToBuffer(_userId, "tool", warningMsg);
+                    await addMessageToBuffer(_userId, "tool", warningMsg, threadId);
 
                     // Recurse to let LLM correct its formatting and use the right tool
-                    return runAgentLoop("", _userId, iterations + 1);
+                    return runAgentLoop("", _userId, iterations + 1, onProgress, threadId);
                 }
             } catch {
                 // Ignore parsing errors
@@ -177,7 +248,7 @@ export async function runAgentLoop(
                 const parsed = JSON.parse(text.trim());
                 if (parsed.text && typeof parsed.text === "string") {
                     const unwrapped = parsed.text;
-                    await addMessageToBuffer(_userId, "assistant", unwrapped);
+                    await addMessageToBuffer(_userId, "assistant", unwrapped, threadId);
                     audit.agentLoopCompleted(_userId, iterations + 1);
                     extractFactsInBackground(_userId, userMessage, unwrapped);
                     return { text: unwrapped, voiceFiles, imageFiles };
@@ -191,7 +262,7 @@ export async function runAgentLoop(
             ? text.slice(0, MAX_OUTPUT_BYTES) + "\n\n[Response truncated for safety]"
             : text;
 
-        await addMessageToBuffer(_userId, "assistant", safeText);
+        await addMessageToBuffer(_userId, "assistant", safeText, threadId);
         audit.agentLoopCompleted(_userId, iterations + 1);
         extractFactsInBackground(_userId, userMessage, safeText);
 

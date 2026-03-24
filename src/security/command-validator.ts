@@ -118,6 +118,59 @@ const DANGEROUS_PATTERNS: Array<{ pattern: RegExp; reason: string }> = [
     { pattern: /\|\s*rm\b/i, reason: "Pipe to rm" },
     { pattern: /`[^`]*`/i, reason: "Backtick command substitution" },
     { pattern: /\$\([^)]*\)/i, reason: "Command substitution" },
+
+    // LOLBins — Living-off-the-land binaries used for payload delivery
+    { pattern: /\bcertutil\b.*(-decode|-urlcache|-f)/i, reason: "certutil payload download/decode" },
+    { pattern: /\bmshta\b/i, reason: "mshta script execution" },
+    { pattern: /\bwscript\b/i, reason: "wscript execution" },
+    { pattern: /\bcscript\b/i, reason: "cscript execution" },
+    { pattern: /\bregsvr32\b.*(scrobj|http|\\\\)/i, reason: "regsvr32 remote payload" },
+    { pattern: /\brundll32\b.*(javascript|http|shell)/i, reason: "rundll32 abuse" },
+    { pattern: /\binstallutil\b/i, reason: "InstallUtil execution bypass" },
+    { pattern: /\bbitsadmin\b.*(transfer|download)/i, reason: "BITSAdmin download" },
+    { pattern: /\bAppInstaller\b/i, reason: "AppInstaller URI bypass" },
+
+    // AMSI bypass attempts
+    { pattern: /\[Ref\]\s*\.Assembly/i, reason: "AMSI bypass via reflection" },
+    { pattern: /AmsiUtils/i, reason: "AMSI bypass" },
+    { pattern: /amsiInitFailed/i, reason: "AMSI patch attempt" },
+    { pattern: /Disable-Amsi/i, reason: "AMSI disable" },
+    { pattern: /amsi\.dll/i, reason: "AMSI DLL reference" },
+
+    // PowerShell obfuscation
+    { pattern: /\[char\]\s*\d+\s*\+\s*\[char\]/i, reason: "Char concatenation obfuscation" },
+    { pattern: /-join\s*['"][^'"]{0,3}['"]/i, reason: "String join obfuscation" },
+    { pattern: /&\s*\(\s*['"]\s*[iex|IEX]/i, reason: "IEX obfuscation" },
+    { pattern: /\.GetMethods\(\)/i, reason: "Reflection method enumeration" },
+    { pattern: /Invoke-Obfuscation/i, reason: "Invoke-Obfuscation tool" },
+
+    // Scheduled task / persistence
+    { pattern: /\bschtasks\b.*(\/create|\/change)/i, reason: "Scheduled task creation" },
+    { pattern: /\bRegister-ScheduledTask\b/i, reason: "Scheduled task persistence" },
+    { pattern: /\bNew-ScheduledTask\b/i, reason: "Scheduled task creation" },
+
+    // Service manipulation
+    { pattern: /\bsc\s+(create|config|start|stop)\b/i, reason: "Service manipulation" },
+    { pattern: /\bNew-Service\b/i, reason: "Service creation" },
+
+    // WMI abuse
+    { pattern: /\bInvoke-WmiMethod\b/i, reason: "WMI method invocation" },
+    { pattern: /\bwmic\b.*process\s+call\s+create/i, reason: "WMIC process creation" },
+    { pattern: /\bGet-WMIObject\b.*Win32_Process/i, reason: "WMI process enumeration" },
+
+    // Reverse shell patterns
+    { pattern: /\bNew-Object\b.*Net\.Sockets\.TCPClient/i, reason: "Reverse TCP shell" },
+    { pattern: /\bSystem\.Net\.Sockets\b/i, reason: "Raw socket usage" },
+    { pattern: /\bnc(\.exe)?\s+-[lnve]/i, reason: "Netcat listener" },
+    { pattern: /\bncat\b.*-[le]/i, reason: "Ncat reverse shell" },
+
+    // Clipboard-based execution
+    { pattern: /Get-Clipboard.*\|\s*IEX/i, reason: "Clipboard code execution" },
+    { pattern: /\$env:CLIPBOARD/i, reason: "Clipboard variable execution" },
+
+    // PowerShell profile tampering
+    { pattern: /\$PROFILE/i, reason: "PowerShell profile access" },
+    { pattern: /Microsoft\.PowerShell_profile/i, reason: "Profile file access" },
 ];
 
 // ─── Suspicious Patterns (Warning, not blocked) ─────────────

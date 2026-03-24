@@ -50,16 +50,16 @@ function getDynamicSkillsPrompt(): string {
 SYSTEM_PROMPT += getDynamicSkillsPrompt();
 
 // ═══════════════════════════════════════════════════════════
-// ─── 3-TIER PROVIDER CHAIN: Gemini → Mistral → OpenRouter ─
+// ─── 3-TIER PROVIDER CHAIN: Mistral → Gemini → OpenRouter ─
 // ═══════════════════════════════════════════════════════════
 // Priority:
-//   1. Gemini  — FREE unlimited (rate-limited only, no billing)
-//   2. Mistral — Paid fallback #1
+//   1. Mistral — Paid primary
+//   2. Gemini  — FREE unlimited fallback (rate-limited)
 //   3. OpenRouter — Paid fallback #2
 // On credit/auth failure, auto-cascades to next provider
 // and sends Boss a Telegram notification.
 
-type ProviderName = "Gemini" | "Mistral" | "OpenRouter";
+type ProviderName = "Gemini" | "Mistral" | "Mistral (Fallback)" | "OpenRouter";
 
 interface Provider {
     name: ProviderName;
@@ -70,17 +70,6 @@ interface Provider {
 // Build provider list (only those with valid API keys)
 const providers: Provider[] = [];
 
-if (config.gemini.apiKey) {
-    providers.push({
-        name: "Gemini",
-        client: new OpenAI({
-            apiKey: config.gemini.apiKey,
-            baseURL: config.gemini.baseUrl,
-        }),
-        model: config.gemini.model,
-    });
-}
-
 if (config.mistral.apiKey) {
     providers.push({
         name: "Mistral",
@@ -89,6 +78,28 @@ if (config.mistral.apiKey) {
             baseURL: config.mistral.baseUrl,
         }),
         model: config.mistral.model,
+    });
+}
+
+if (config.mistral.apiKeyFallback) {
+    providers.push({
+        name: "Mistral (Fallback)",
+        client: new OpenAI({
+            apiKey: config.mistral.apiKeyFallback,
+            baseURL: config.mistral.baseUrl,
+        }),
+        model: config.mistral.model,
+    });
+}
+
+if (config.gemini.apiKey) {
+    providers.push({
+        name: "Gemini",
+        client: new OpenAI({
+            apiKey: config.gemini.apiKey,
+            baseURL: config.gemini.baseUrl,
+        }),
+        model: config.gemini.model,
     });
 }
 
@@ -135,7 +146,7 @@ async function notifyBoss(message: string): Promise<void> {
 let totalTokensUsed = 0;
 let creditAlertSent = false;
 const CREDIT_ALERT_TOKEN_THRESHOLD = 500_000;
-let lastModelSwitchAlertTime = 0;
+
 
 // ─── Types ──────────────────────────────────────────────
 export type ChatMessage = OpenAI.ChatCompletionMessageParam;
@@ -298,18 +309,8 @@ You have maximum authority to execute OS commands, modify anything on the system
                             : "rate limited";
 
                     const nextProvider = providers[i + 1];
-                    logger.warn(`${provider.name} ${reason}. Cascading to ${nextProvider.name} (${nextProvider.model}).`);
-
-                    const now = Date.now();
-                    // Throttle switch alerts to max 1 per hour so Boss isn't spammed with transient failures
-                    if (now - lastModelSwitchAlertTime > 60 * 60 * 1000) {
-                        lastModelSwitchAlertTime = now;
-                        await notifyBoss(
-                            `⚠️ *Model Switch Alert*\n\n${provider.name} ${reason}. Switching to ${nextProvider.name} (${nextProvider.model}) to keep running.`
-                        );
-                    } else {
-                        logger.info("Suppressed redundant Model Switch Alert via Telegram.");
-                    }
+                    // Silent failover — log internally, no Telegram interruption
+                    logger.warn(`${provider.name} ${reason}. Seamlessly switching to ${nextProvider.name} (${nextProvider.model}).`);
 
                     continue; // try next provider in the loop
                 }

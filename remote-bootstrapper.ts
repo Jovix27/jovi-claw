@@ -8,7 +8,7 @@
 
 import "dotenv/config";
 import WebSocket from "ws";
-import { spawn, exec } from "node:child_process";
+import { spawn } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -33,6 +33,34 @@ url.searchParams.set("type", "bootstrapper");
 let reconnectAttempt = 0;
 let agentRunning = false;
 
+function startAgent(ws: WebSocket): void {
+    if (agentRunning) return;
+    agentRunning = true;
+    console.log("🚀 Spawning remote-agent...");
+
+    const child = spawn("node", ["--import", "tsx", "remote-agent.ts"], {
+        cwd: PROJECT_ROOT,
+        stdio: "ignore",
+        detached: true,
+        shell: true,
+    });
+
+    child.unref();
+
+    child.on("exit", (code) => {
+        console.log(`📴 Remote agent exited (code ${code}). Ready for re-launch.`);
+        agentRunning = false;
+    });
+
+    child.on("error", (err) => {
+        console.error("❌ Failed to start remote agent:", err.message);
+        agentRunning = false;
+    });
+
+    ws.send(JSON.stringify({ type: "BOOTSTRAP_STATUS", status: "started" }));
+    console.log("✅ Remote agent spawned.");
+}
+
 function connect() {
     console.log(`📡 Connecting bootstrapper to ${url.origin}...`);
     // Use Authorization header instead of URL parameter for security
@@ -43,48 +71,25 @@ function connect() {
     });
 
     ws.on("open", () => {
-        console.log("✅ Bootstrapper ONLINE (Passive mode)");
+        console.log("✅ Bootstrapper ONLINE — auto-starting remote agent...");
         console.log(`   Project root: ${PROJECT_ROOT}`);
         reconnectAttempt = 0;
+        // Auto-start agent immediately — no need to wait for a BOOTSTRAP_START signal
+        startAgent(ws);
     });
 
     ws.on("message", (data) => {
         try {
             const msg = JSON.parse(data.toString());
+            // Still support manual BOOTSTRAP_START (e.g. for re-triggering after agent crash)
             if (msg.type === "BOOTSTRAP_START") {
                 if (agentRunning) {
-                    console.log("⚠️ Agent already running, ignoring duplicate START signal.");
+                    console.log("⚠️ Agent already running.");
                     ws.send(JSON.stringify({ type: "BOOTSTRAP_STATUS", status: "already_running" }));
                     return;
                 }
-
-                console.log("🚀 Received START signal! Booting remote-agent...");
-                agentRunning = true;
-
-                // Use spawn with explicit cwd for reliable process creation
-                const child = spawn("node", ["--import", "tsx", "remote-agent.ts"], {
-                    cwd: PROJECT_ROOT,
-                    stdio: "ignore",
-                    detached: true,
-                    shell: true,
-                });
-
-                child.unref();
-
-                // Monitor if the child process exits (crash/stop)
-                child.on("exit", (code) => {
-                    console.log(`📴 Remote agent exited with code ${code}. Ready for re-launch.`);
-                    agentRunning = false;
-                });
-
-                child.on("error", (err) => {
-                    console.error("❌ Failed to start remote agent:", err.message);
-                    agentRunning = false;
-                });
-
-                // Send status back to cloud relay
-                ws.send(JSON.stringify({ type: "BOOTSTRAP_STATUS", status: "started" }));
-                console.log("✅ Remote agent process spawned successfully.");
+                console.log("🚀 Manual START signal received. Booting remote-agent...");
+                startAgent(ws);
             }
         } catch (err) {
             console.error("Failed to parse message.");

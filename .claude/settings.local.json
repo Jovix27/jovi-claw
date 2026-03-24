@@ -9,7 +9,8 @@
       "Bash(npx:*)",
       "Bash(./node_modules/.bin/tsc:*)",
       "Bash(dir:*)",
-      "Bash(npm run bootstrapper-hotkey:*)"
+      "Bash(npm run bootstrapper-hotkey:*)",
+      "Bash(cat \"e:/Company/Green Build AI/R&D/Jovi Claw/src/index.ts\")"
     ]
   }
 }

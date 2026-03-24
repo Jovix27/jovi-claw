@@ -34,6 +34,28 @@ const REMOTE_TOOL_NAMES = new Set([
     "remote_pc_keyboard",
     "remote_pc_mouse",
     "remote_pc_camera",
+    "remote_pc_clipboard_get",
+    "remote_pc_clipboard_set",
+    "remote_pc_file_read",
+    "remote_pc_file_write",
+    "remote_pc_file_list",
+    "remote_pc_process_list",
+    "remote_pc_process_kill",
+    "remote_pc_notify",
+    "remote_pc_open",
+    "remote_pc_system_info",
+    // Computer Use additions
+    "remote_pc_scroll",
+    "remote_pc_window_list",
+    "remote_pc_window_focus",
+    "remote_pc_browser_navigate",
+    "remote_pc_browser_screenshot",
+    "remote_pc_browser_click",
+    "remote_pc_browser_type",
+    "remote_pc_browser_scroll",
+    "remote_pc_browser_back",
+    "remote_pc_browser_eval",
+    "computer_use_task",
 ]);
 
 // ─── Registry ───────────────────────────────────────────
@@ -138,8 +160,21 @@ import { generatePdfDef, executeGeneratePdf } from "./generate-pdf.js";
 import { remotePcExecuteDef, executeRemotePcCommand } from "./remote-pc-execute.js";
 import {
     remoteScreenshotDef, remoteKeyboardDef, remoteMouseDef, remoteCameraDef,
-    executeRemoteScreenshot, executeRemoteKeyboard, executeRemoteMouse, executeRemoteCamera
+    executeRemoteScreenshot, executeRemoteKeyboard, executeRemoteMouse, executeRemoteCamera,
+    remoteScrollDef, executeRemoteScroll,
+    remoteWindowListDef, executeRemoteWindowList,
+    remoteWindowFocusDef, executeRemoteWindowFocus,
 } from "./remote-pc-gui.js";
+import {
+    browserNavigateDef, executeBrowserNavigate,
+    browserScreenshotDef, executeBrowserScreenshot,
+    browserClickDef, executeBrowserClick,
+    browserTypeDef, executeBrowserType,
+    browserScrollDef, executeBrowserScroll,
+    browserBackDef, executeBrowserBack,
+    browserEvalDef, executeBrowserEval,
+} from "./remote-pc-browser.js";
+import { computerUseDef, executeComputerUseTask } from "./computer-use.js";
 import { toggleAgentModeDef, executeToggleAgentMode } from "./agent-mode.js";
 
 // New ChatGPT/Claude-like capabilities
@@ -151,6 +186,23 @@ import { readSkillDef, executeReadSkill } from "./read-skill.js";
 
 // Integration with Jovi Workspace (BuildSight)
 import { joviIntegrationDef, executeJoviIntegration } from "./jovi-integration.js";
+
+// Extended Agent Mode tools
+import {
+    clipboardGetDef, executeClipboardGet,
+    clipboardSetDef, executeClipboardSet,
+    fileReadDef, executeFileRead,
+    fileWriteDef, executeFileWrite,
+    fileListDef, executeFileList,
+    processListDef, executeProcessList,
+    processKillDef, executeProcessKill,
+    notifyDef, executeNotify,
+    openDef, executeOpen,
+    systemInfoDef, executeSystemInfo,
+} from "./remote-pc-extra.js";
+
+// Boss's To-Do List (Google Sheets)
+import { manageTodoDef, executeManageTodo } from "./manage-todo.js";
 
 // Add new tools here as they are created.
 register(getCurrentTimeTool);
@@ -268,5 +320,35 @@ register({
     definition: joviIntegrationDef,
     execute: (args) => executeJoviIntegration(args as any)
 });
+register({
+    name: "manage_todo",
+    definition: manageTodoDef,
+    execute: (args) => executeManageTodo(args as any)
+});
+
+// ─── Extended Agent Mode Tools ──────────────────────────
+register({ name: "remote_pc_clipboard_get",  definition: clipboardGetDef,  execute: () => executeClipboardGet() });
+register({ name: "remote_pc_clipboard_set",  definition: clipboardSetDef,  execute: (args) => executeClipboardSet(args as any) });
+register({ name: "remote_pc_file_read",      definition: fileReadDef,      execute: (args) => executeFileRead(args as any) });
+register({ name: "remote_pc_file_write",     definition: fileWriteDef,     execute: (args) => executeFileWrite(args as any) });
+register({ name: "remote_pc_file_list",      definition: fileListDef,      execute: (args) => executeFileList(args as any) });
+register({ name: "remote_pc_process_list",   definition: processListDef,   execute: () => executeProcessList() });
+register({ name: "remote_pc_process_kill",   definition: processKillDef,   execute: (args) => executeProcessKill(args as any) });
+register({ name: "remote_pc_notify",         definition: notifyDef,        execute: (args) => executeNotify(args as any) });
+register({ name: "remote_pc_open",           definition: openDef,          execute: (args) => executeOpen(args as any) });
+register({ name: "remote_pc_system_info",    definition: systemInfoDef,    execute: () => executeSystemInfo() });
+
+// ─── Computer Use Tools ──────────────────────────────────
+register({ name: "remote_pc_scroll",            definition: remoteScrollDef,       execute: (args) => executeRemoteScroll(args as any) });
+register({ name: "remote_pc_window_list",        definition: remoteWindowListDef,   execute: () => executeRemoteWindowList() });
+register({ name: "remote_pc_window_focus",       definition: remoteWindowFocusDef,  execute: (args) => executeRemoteWindowFocus(args as any) });
+register({ name: "remote_pc_browser_navigate",   definition: browserNavigateDef,    execute: (args) => executeBrowserNavigate(args as any) });
+register({ name: "remote_pc_browser_screenshot", definition: browserScreenshotDef,  execute: () => executeBrowserScreenshot() });
+register({ name: "remote_pc_browser_click",      definition: browserClickDef,       execute: (args) => executeBrowserClick(args as any) });
+register({ name: "remote_pc_browser_type",       definition: browserTypeDef,        execute: (args) => executeBrowserType(args as any) });
+register({ name: "remote_pc_browser_scroll",     definition: browserScrollDef,      execute: (args) => executeBrowserScroll(args as any) });
+register({ name: "remote_pc_browser_back",       definition: browserBackDef,        execute: () => executeBrowserBack() });
+register({ name: "remote_pc_browser_eval",       definition: browserEvalDef,        execute: (args) => executeBrowserEval(args as any) });
+register({ name: "computer_use_task",            definition: computerUseDef,        execute: (args) => executeComputerUseTask(args as any) });
 
 logger.info(`Built-in tool registry loaded.`, { count: registry.size });

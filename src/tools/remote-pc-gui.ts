@@ -193,3 +193,70 @@ export async function executeRemoteCamera(): Promise<{ text: string; imagePath?:
         return { text: `Camera capture failed: ${err.message}` };
     }
 }
+
+// ─── Scroll Tool ─────────────────────────────────────────
+
+export const remoteScrollDef: ChatCompletionTool = {
+    type: "function",
+    function: {
+        name: "remote_pc_scroll",
+        description: "Scroll the mouse wheel at a screen position on Boss's PC. Use to reveal off-screen content, scroll through lists, or navigate long pages.",
+        parameters: {
+            type: "object",
+            properties: {
+                x:         { type: "number",  description: "X coordinate to scroll at" },
+                y:         { type: "number",  description: "Y coordinate to scroll at" },
+                direction: { type: "string",  enum: ["up", "down"], description: "Scroll direction" },
+                amount:    { type: "number",  description: "Number of scroll notches (default 3)" },
+            },
+            required: ["x", "y", "direction"],
+        },
+    },
+};
+
+export async function executeRemoteScroll(args: { x: number; y: number; direction: "up" | "down"; amount?: number }): Promise<string> {
+    if (!isRemoteAgentConnected()) return "Remote agent not connected. Start remote-agent on the PC.";
+    const res = await sendRemoteRequest("scroll", { x: args.x, y: args.y, direction: args.direction, amount: args.amount ?? 3 });
+    if (res.error) throw new Error(res.error);
+    return res.stdout || `Scrolled ${args.direction} ${args.amount ?? 3} notches at (${args.x}, ${args.y})`;
+}
+
+// ─── Window Tools ─────────────────────────────────────────
+
+export const remoteWindowListDef: ChatCompletionTool = {
+    type: "function",
+    function: {
+        name: "remote_pc_window_list",
+        description: "List all open windows on Boss's PC with their titles, process names, and PIDs.",
+        parameters: { type: "object", properties: {}, required: [] },
+    },
+};
+
+export async function executeRemoteWindowList(): Promise<string> {
+    if (!isRemoteAgentConnected()) return "Remote agent not connected.";
+    const res = await sendRemoteRequest("window_list", {});
+    if (res.error) throw new Error(res.error);
+    return res.stdout || "No windows found.";
+}
+
+export const remoteWindowFocusDef: ChatCompletionTool = {
+    type: "function",
+    function: {
+        name: "remote_pc_window_focus",
+        description: "Bring a window to the front on Boss's PC by matching its title. Use after opening an app to ensure it is in focus.",
+        parameters: {
+            type: "object",
+            properties: {
+                window_title: { type: "string", description: "Partial or full window title to match (case-insensitive)" },
+            },
+            required: ["window_title"],
+        },
+    },
+};
+
+export async function executeRemoteWindowFocus(args: { window_title: string }): Promise<string> {
+    if (!isRemoteAgentConnected()) return "Remote agent not connected.";
+    const res = await sendRemoteRequest("window_focus", { window_title: args.window_title });
+    if (res.error) throw new Error(res.error);
+    return res.stdout || `Focused window matching: ${args.window_title}`;
+}

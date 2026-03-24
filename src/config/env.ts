@@ -45,6 +45,7 @@ export const config = {
 
     mistral: {
         apiKey: optional("MISTRAL_API_KEY", ""),
+        apiKeyFallback: optional("MISTRAL_API_KEY_FALLBACK", ""),
         model: optional("MISTRAL_MODEL", "mistral-small-latest"),
         baseUrl: "https://api.mistral.ai/v1",
     },
@@ -100,6 +101,11 @@ export const config = {
     remoteControl: {
         secret: optional("REMOTE_CONTROL_SECRET", ""),
         port: parseInt(optional("REMOTE_CONTROL_PORT", process.env.PORT || "3001"), 10),
+    },
+
+    googleSheets: {
+        apiKey: optional("GOOGLE_SHEETS_API_KEY", ""),
+        serviceAccountB64: optional("GOOGLE_SERVICE_ACCOUNT_B64", ""),
     },
 } as const;
 

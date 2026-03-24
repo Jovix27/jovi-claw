@@ -10,10 +10,11 @@ import { initSemanticMemory } from "./utils/semantic.js";
 import { initMcpClients, closeMcpClients } from "./utils/mcp-client.js";
 import { initHeartbeatState, shouldCatchUp } from "./utils/heartbeat-state.js";
 import { initScheduler, stopScheduler, registerHeartbeatCommand, triggerHeartbeat } from "./scheduler/index.js";
-import { startRelayServer, stopRelayServer } from "./utils/remote-relay.js";
+import { startRelayServer, stopRelayServer, setAgentConnectedCallback } from "./utils/remote-relay.js";
+import { setAgentMode } from "./tools/index.js";
+import { setThreatAlertCallback } from "./security/threat-detector.js";
 import { setCreditAlertCallback } from "./llm/claude.js";
 import { startOrchestratorCron } from "./agent/orchestrator-cron.js";
-import { startWhatsAppIntegration, stopWhatsAppIntegration } from "./bot/whatsapp-integration.js";
 
 // ─── Banner ─────────────────────────────────────────────
 function printBanner(): void {
@@ -55,6 +56,14 @@ async function main(): Promise<void> {
 
     // ─── Wire Credit Alert → Telegram ────────────────────
     const bossId = config.security.allowedUserIds[0];
+
+    // ─── Wire Threat Alerts → Telegram ───────────────────
+    if (bossId) {
+        setThreatAlertCallback(async (msg: string) => {
+            await bot.api.sendMessage(bossId, msg, { parse_mode: "Markdown" }).catch(() => {});
+        });
+    }
+
     if (bossId) {
         setCreditAlertCallback(async (message: string) => {
             try {
@@ -88,21 +97,28 @@ async function main(): Promise<void> {
 
     // ─── Start Remote Control Relay ──────────────────────
     if (config.remoteControl.secret) {
+        // Auto-enable agent mode and notify Boss the moment the PC connects
+        setAgentConnectedCallback(async () => {
+            if (bossId) {
+                await setAgentMode(bossId, true);
+                await bot.api.sendMessage(
+                    bossId,
+                    "🟢 *Agent Mode Auto-Activated!*\nYour PC just connected, Boss. I now have full remote control — ready for commands.",
+                    { parse_mode: "Markdown" }
+                ).catch(() => {}); // non-fatal
+            }
+        });
         startRelayServer(config.remoteControl.secret, config.remoteControl.port);
         logger.info("Remote control relay server started.", { port: config.remoteControl.port });
     } else {
         logger.info("Remote control disabled (no REMOTE_CONTROL_SECRET set).");
     }
 
-    // ─── Start WhatsApp Client ───────────────────────────
-    await startWhatsAppIntegration();
-
     // ─── Graceful shutdown ────────────────────────────────
     const shutdown = async (signal: string) => {
         logger.info(`Received ${signal} — shutting down gracefully...`);
         stopScheduler();
         await bot.stop();
-        await stopWhatsAppIntegration();
         await stopRelayServer();
         await closeMcpClients();
         closeMemoryDB();
@@ -117,37 +133,44 @@ async function main(): Promise<void> {
     logger.info("🚀 Bot is live! Listening via long-polling (no open ports).");
     logger.info(`   Whitelisted users: ${config.security.allowedUserIds.join(", ")}`);
 
-    await bot.start({
-        onStart: async () => {
-            logger.info("grammY polling started successfully.");
+    try {
+        await bot.start({
+            onStart: async () => {
+                logger.info("grammY polling started successfully.");
 
-            // ─── Init Heartbeat Scheduler ────────────────────
-            initScheduler(bot);
+                // ─── Init Heartbeat Scheduler ────────────────────
+                initScheduler(bot);
 
-            // ─── Check for missed heartbeat (catch-up) ──────
-            if (config.heartbeat.enabled && config.heartbeat.catchUpOnMissed) {
-                const bossId = config.security.allowedUserIds[0];
-                if (bossId) {
-                    const needsCatchUp = await shouldCatchUp(bossId);
-                    if (needsCatchUp) {
-                        const now = new Date();
-                        const heartbeatHour = config.heartbeat.hour;
-                        const heartbeatMinute = config.heartbeat.minute;
+                // ─── Check for missed heartbeat (catch-up) ──────
+                if (config.heartbeat.enabled && config.heartbeat.catchUpOnMissed) {
+                    const bossId = config.security.allowedUserIds[0];
+                    if (bossId) {
+                        const needsCatchUp = await shouldCatchUp(bossId);
+                        if (needsCatchUp) {
+                            const now = new Date();
+                            const heartbeatHour = config.heartbeat.hour;
+                            const heartbeatMinute = config.heartbeat.minute;
 
-                        // Only catch up if current time is after scheduled time
-                        const isPastScheduledTime =
-                            now.getHours() > heartbeatHour ||
-                            (now.getHours() === heartbeatHour && now.getMinutes() >= heartbeatMinute);
+                            // Only catch up if current time is after scheduled time
+                            const isPastScheduledTime =
+                                now.getHours() > heartbeatHour ||
+                                (now.getHours() === heartbeatHour && now.getMinutes() >= heartbeatMinute);
 
-                        if (isPastScheduledTime) {
-                            logger.info("Missed heartbeat detected, sending catch-up...");
-                            await triggerHeartbeat();
+                            if (isPastScheduledTime) {
+                                logger.info("Missed heartbeat detected, sending catch-up...");
+                                await triggerHeartbeat();
+                            }
                         }
                     }
                 }
-            }
-        },
-    });
+            },
+        });
+    } catch (e: any) {
+        logger.error("⚠️ Telegram polling failed! Another instance (Railway) is likely running.", { 
+            message: e.message 
+        });
+        logger.info("Local Express server remains online for Dashboard testing.");
+    }
 }
 
 main().catch((error) => {

@@ -94,7 +94,7 @@ function buildTrendQuery(coreFacts: Array<{ fact_key: string; fact_value: string
         .map((f) => f.fact_value)
         .join(" ");
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // YYYY-MM-DD in IST
 
     if (interests.trim()) {
         return `${interests} latest news trends ${today}`;
@@ -107,6 +107,13 @@ function buildTrendQuery(coreFacts: Array<{ fact_key: string; fact_value: string
 /**
  * Build the LLM prompt for composing the heartbeat message.
  */
+function getTimeOfDay(hourIST: number): string {
+    if (hourIST >= 5 && hourIST < 12) return "morning";
+    if (hourIST >= 12 && hourIST < 17) return "afternoon";
+    if (hourIST >= 17 && hourIST < 21) return "evening";
+    return "night";
+}
+
 function buildHeartbeatPrompt(context: {
     coreFacts: Array<{ fact_key: string; fact_value: string }>;
     recentMessages: Array<{ role: string; content: string }>;
@@ -115,16 +122,26 @@ function buildHeartbeatPrompt(context: {
     preferences?: Record<string, string>;
 }): string {
     const now = new Date();
+    const IST_OPTIONS = { timeZone: "Asia/Kolkata" } as const;
     const dateStr = now.toLocaleDateString("en-US", {
+        ...IST_OPTIONS,
         weekday: "long",
         year: "numeric",
         month: "long",
         day: "numeric",
     });
     const timeStr = now.toLocaleTimeString("en-US", {
+        ...IST_OPTIONS,
         hour: "2-digit",
         minute: "2-digit",
     });
+
+    // Determine IST hour for correct time-of-day greeting
+    const istHour = parseInt(
+        new Intl.DateTimeFormat("en-US", { ...IST_OPTIONS, hour: "numeric", hour12: false }).format(now),
+        10
+    );
+    const timeOfDay = getTimeOfDay(istHour);
 
     const factsText =
         context.coreFacts.length > 0
@@ -178,7 +195,7 @@ ${prefsText}
 ─────────────────────────────────────────────────────────────
 
 INSTRUCTIONS:
-1. Greet Boss warmly with a personalized "Good morning" that feels natural (use their name if known)
+1. Greet Boss warmly with a personalized "Good ${timeOfDay}" that feels natural (use their name if known)
 2. Optionally ask a personal check-in question (e.g., "How are you feeling today?" or "Did you track your weight?")
 3. Provide a brief "Daily Briefing" with 2-3 relevant news items or trends from the research
 4. Reference any ongoing projects, tasks, or goals from memory if applicable
