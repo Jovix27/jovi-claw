@@ -174,6 +174,7 @@ export default function ChatInterface({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [remoteAgentOnline, setRemoteAgentOnline] = useState<boolean | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [activeTab, setActiveTab] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -211,6 +212,25 @@ export default function ChatInterface({
     fetchHistory();
   }, [activeThreadId]);
 
+  // Poll Remote Agent Status
+  useEffect(() => {
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    const checkStatus = async () => {
+      try {
+        const res = await fetch(`${apiBase}/api/status`);
+        if (res.ok) {
+          const d = await res.json();
+          setRemoteAgentOnline(d.agent_connected);
+        }
+      } catch {
+        setRemoteAgentOnline(false);
+      }
+    };
+    checkStatus();
+    const inv = setInterval(checkStatus, 5000);
+    return () => clearInterval(inv);
+  }, []);
+
   // Auto-scroll
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -221,7 +241,10 @@ export default function ChatInterface({
     const apiBase = process.env.NEXT_PUBLIC_API_URL    || "http://localhost:3001";
     const token   = process.env.NEXT_PUBLIC_JOVI_SECRET || "";
 
-    const s = io(apiBase, { auth: { token } });
+    const s = io(apiBase, { 
+      auth: { token },
+      transports: ["websocket"] 
+    });
 
     s.on("connect", () => {
       console.log("✅ Jovi Dashboard connected");
@@ -302,12 +325,15 @@ export default function ChatInterface({
         >
           <Menu size={20} />
         </button>
-        <span
-          className="text-xl text-[#e0e0e0] italic"
-          style={{ letterSpacing: "-0.02em", fontFamily: "var(--font-newsreader), serif" }}
-        >
-          jovi
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className="text-xl text-[#e0e0e0] italic"
+            style={{ letterSpacing: "-0.02em", fontFamily: "var(--font-newsreader), serif" }}
+          >
+            jovi
+          </span>
+          <span className={`w-1.5 h-1.5 rounded-full mt-1 ${remoteAgentOnline ? 'bg-green-500' : 'bg-red-500/40'}`} />
+        </div>
         <div className="w-8" /> {/* Spacer */}
       </header>
 
@@ -382,6 +408,18 @@ export default function ChatInterface({
       {hasMessages && (
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-3xl mx-auto px-6 py-8 space-y-8">
+            
+            {computerMode && remoteAgentOnline === false && (
+              <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+                <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+                  <Monitor size={16} className="text-red-400" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-red-200">Remote PC Offline</p>
+                  <p className="text-xs text-red-300/60">Commands will not execute until you run <code className="bg-red-500/20 px-1 rounded">npm run remote-agent</code> on your PC.</p>
+                </div>
+              </div>
+            )}
             {messages.map((msg, i) => (
               <div
                 key={i}
