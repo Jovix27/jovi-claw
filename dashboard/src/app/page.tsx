@@ -63,6 +63,7 @@ export default function Home() {
         onClose={() => setIsSidebarOpen(false)}
         isDesktopCollapsed={isDesktopCollapsed}
         onToggleDesktopCollapse={() => setIsDesktopCollapsed(!isDesktopCollapsed)}
+        onNavigateHome={() => { setActiveView("search"); setIsDesktopCollapsed(false); setIsSidebarOpen(false); }}
       />
 
       {/* Mobile Overlay */}

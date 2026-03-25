@@ -371,10 +371,10 @@ export default function ChatInterface({
         </button>
         <div className="flex items-center gap-2">
           <span
-            className="text-xl text-[#e0e0e0] italic"
-            style={{ letterSpacing: "-0.02em", fontFamily: "var(--font-cormorant), serif" }}
+            className="text-xl text-[#e0e0e0]"
+            style={{ letterSpacing: "-0.01em", fontFamily: "var(--font-caslon), serif" }}
           >
-            jovi
+            Jovi
           </span>
           <span className={`w-1.5 h-1.5 rounded-full mt-1 ${remoteAgentOnline ? 'bg-green-500' : 'bg-red-500/40'}`} />
         </div>
@@ -387,10 +387,10 @@ export default function ChatInterface({
 
           {/* Wordmark */}
           <h1
-            className="text-5xl text-[#e0e0e0] mb-8 select-none italic"
-            style={{ letterSpacing: "-0.04em", fontFamily: "var(--font-cormorant), serif" }}
+            className="text-5xl text-[#e0e0e0] mb-8 select-none"
+            style={{ letterSpacing: "-0.02em", fontFamily: "var(--font-caslon), serif" }}
           >
-            jovi
+            Jovi
           </h1>
 
           {/* Input */}

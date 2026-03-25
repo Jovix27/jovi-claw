@@ -26,6 +26,7 @@ interface SidebarProps {
   onClose: () => void;
   isDesktopCollapsed: boolean;
   onToggleDesktopCollapse: () => void;
+  onNavigateHome: () => void;
 }
 
 const MAIN_NAV = [
@@ -53,6 +54,7 @@ export default function Sidebar({
   onClose,
   isDesktopCollapsed,
   onToggleDesktopCollapse,
+  onNavigateHome,
 }: SidebarProps) {
   const [threads, setThreads] = useState<Array<{thread_id: string; title: string; updated_at: number}>>([]);
 
@@ -87,9 +89,9 @@ export default function Sidebar({
       {/* Brand & Mobile Close */}
       <div className="px-4 pt-5 pb-3 flex items-center justify-between shrink-0">
         <button
-          onClick={onToggleDesktopCollapse}
+          onClick={() => { onNavigateHome(); onClose(); }}
           className="flex items-center hover:opacity-80 transition-opacity"
-          aria-label="Toggle Sidebar"
+          aria-label="Go home"
         >
           <span
             className="text-[#e0e0e0] select-none"
