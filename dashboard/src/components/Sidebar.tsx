@@ -17,6 +17,8 @@ interface SidebarProps {
   onViewChange: (v: "search" | "computer" | "agents" | "library" | "history") => void;
   onNewThread: () => void;
   computerMode: boolean;
+  onComputerModeToggle: () => void;
+  socket: any;
   activeThreadId: string;
   onThreadSelect: (t: string) => void;
   onOpenSettings: () => void;
@@ -90,8 +92,8 @@ export default function Sidebar({
           aria-label="Toggle Sidebar"
         >
           <span
-            className="text-[28px] text-[#e0e0e0] select-none italic"
-            style={{ letterSpacing: "-0.02em", fontFamily: "var(--font-cormorant), serif" }}
+            className="text-[#e0e0e0] select-none"
+            style={{ letterSpacing: "-0.01em", fontFamily: "var(--font-caslon), serif", fontSize: "26px" }}
           >
             jovi
           </span>

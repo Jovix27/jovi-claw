@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Cormorant_Garamond } from "next/font/google";
+import { Inter, Libre_Caslon_Display } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: '--font-inter' });
-const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["400", "500", "600"], style: ["normal", "italic"], variable: '--font-cormorant' });
+const caslon = Libre_Caslon_Display({ subsets: ["latin"], weight: ["400"], variable: '--font-caslon' });
 
 export const metadata: Metadata = {
   title: "Jovi Dashboard | AI Command Center",
@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${cormorant.variable} font-sans`}>{children}</body>
+      <body className={`${inter.variable} ${caslon.variable} font-sans`}>{children}</body>
     </html>
   );
 }
