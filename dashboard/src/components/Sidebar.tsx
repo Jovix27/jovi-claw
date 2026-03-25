@@ -95,7 +95,7 @@ export default function Sidebar({
             className="text-[#e0e0e0] select-none"
             style={{ letterSpacing: "-0.01em", fontFamily: "var(--font-caslon), serif", fontSize: "26px" }}
           >
-            jovi
+            Jovi
           </span>
         </button>
         <button
