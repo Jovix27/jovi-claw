@@ -3,6 +3,17 @@
 import { useState, useEffect } from "react";
 import { History, MessageSquare, Clock } from "lucide-react";
 
+function getApiBase(): string {
+  const env = process.env.NEXT_PUBLIC_API_URL;
+  if (env) return env;
+  if (typeof window !== "undefined") {
+    if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-ai.vercel.app") {
+      return "https://jovi-claw-production-6270.up.railway.app";
+    }
+  }
+  return "http://localhost:3001";
+}
+
 interface HistoryViewProps {
   onThreadSelect: (id: string) => void;
 }
@@ -10,25 +21,31 @@ interface HistoryViewProps {
 export default function HistoryView({ onThreadSelect }: HistoryViewProps) {
   const [threads, setThreads] = useState<Array<{ thread_id: string; title: string; updated_at: number }>>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchThreads = async () => {
       try {
-        const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        setError(null);
+        const apiBase = getApiBase();
         const token = process.env.NEXT_PUBLIC_JOVI_SECRET || "";
         const res = await fetch(`${apiBase}/api/history`, { headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
           const d = await res.json();
           setThreads(d.threads || []);
+        } else {
+          setError(`Failed to load history (${res.status})`);
         }
       } catch (err) {
         console.error("Failed to fetch history:", err);
+        setError("Could not connect to server. Is the backend running?");
       } finally {
         setLoading(false);
       }
     };
     fetchThreads();
   }, []);
+
   return (
     <div className="flex-1 flex flex-col h-full bg-[#141414] overflow-y-auto w-full">
       <div className="max-w-4xl mx-auto w-full px-8 py-12">
@@ -39,7 +56,22 @@ export default function HistoryView({ onThreadSelect }: HistoryViewProps) {
           <h1 className="text-2xl font-semibold text-white tracking-tight">Chat History</h1>
         </div>
 
-        {threads.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-20 text-[#666]">
+            <div className="w-5 h-5 border-2 border-white/20 border-t-white/60 rounded-full animate-spin mx-auto mb-3" />
+            Loading history...
+          </div>
+        ) : error ? (
+          <div className="text-center py-20">
+            <p className="text-red-400/80 text-sm">{error}</p>
+            <button
+              onClick={() => { setLoading(true); setError(null); /* re-trigger */ }}
+              className="mt-3 text-xs text-blue-400 hover:text-blue-300"
+            >
+              Retry
+            </button>
+          </div>
+        ) : threads.length === 0 ? (
           <div className="text-center py-20 text-[#666]">
             No past conversations found.
           </div>

@@ -4,6 +4,17 @@ import { useEffect, useState, useRef } from "react";
 import { Socket } from "socket.io-client";
 import { Monitor, X, Globe, Wifi, WifiOff } from "lucide-react";
 
+function getApiBase(): string {
+  const env = process.env.NEXT_PUBLIC_API_URL;
+  if (env) return env;
+  if (typeof window !== "undefined") {
+    if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-ai.vercel.app") {
+      return "https://jovi-claw-production-6270.up.railway.app";
+    }
+  }
+  return "http://localhost:3001";
+}
+
 interface ActionLog {
   time: string;
   action: string;
@@ -18,18 +29,34 @@ interface RightPanelProps {
 export default function RightPanel({ socket, onClose }: RightPanelProps) {
   const [actionLog, setActionLog] = useState<ActionLog[]>([]);
   const [screenshot, setScreenshot] = useState<string | null>(null);
-  const [lastScreenshotTime, setLastScreenshotTime] = useState<number>(0);
   const [isAgentConnected, setIsAgentConnected] = useState(false);
   const [currentUrl, setCurrentUrl] = useState("");
   const logEndRef = useRef<HTMLDivElement>(null);
+
+  // Poll /api/status for live agent connection status (fast, every 2s)
+  useEffect(() => {
+    const apiBase = getApiBase();
+    const check = async () => {
+      try {
+        const res = await fetch(`${apiBase}/api/status`);
+        if (res.ok) {
+          const d = await res.json();
+          setIsAgentConnected(!!d.agent_connected);
+        }
+      } catch {
+        setIsAgentConnected(false);
+      }
+    };
+    check(); // check immediately
+    const inv = setInterval(check, 2000);
+    return () => clearInterval(inv);
+  }, []);
 
   // Listen for live screenshots
   useEffect(() => {
     if (!socket) return;
     const handler = (data: { imageData: string; timestamp: number }) => {
       setScreenshot(`data:image/png;base64,${data.imageData}`);
-      setLastScreenshotTime(data.timestamp);
-      setIsAgentConnected(true);
     };
     socket.on("screenshot", handler);
     return () => { socket.off("screenshot", handler); };
@@ -48,20 +75,6 @@ export default function RightPanel({ socket, onClose }: RightPanelProps) {
     return () => { socket.off("action_log", handler); };
   }, [socket]);
 
-  // Poll agent status
-  useEffect(() => {
-    const check = () => {
-      const now = Date.now();
-      if (lastScreenshotTime > 0 && now - lastScreenshotTime < 8000) {
-        setIsAgentConnected(true);
-      } else if (lastScreenshotTime > 0) {
-        setIsAgentConnected(false);
-      }
-    };
-    const inv = setInterval(check, 3000);
-    return () => clearInterval(inv);
-  }, [lastScreenshotTime]);
-
   const stepCount = actionLog.length;
 
   return (
@@ -76,7 +89,7 @@ export default function RightPanel({ socket, onClose }: RightPanelProps) {
         </div>
         <div className="flex items-center gap-3">
           {/* Connection status */}
-          <span className="text-xs text-[#888] flex items-center gap-1.5">
+          <span className="text-xs flex items-center gap-1.5">
             {isAgentConnected ? (
               <>
                 <Wifi size={12} className="text-green-400" />
@@ -117,7 +130,7 @@ export default function RightPanel({ socket, onClose }: RightPanelProps) {
           )}
 
           {/* Screenshot or Waiting State */}
-          <div className="flex-1 relative overflow-hidden">
+          <div className="flex-1 relative overflow-hidden flex items-center justify-center">
             {screenshot ? (
               <img
                 src={screenshot}
@@ -126,16 +139,18 @@ export default function RightPanel({ socket, onClose }: RightPanelProps) {
                 style={{ imageRendering: "auto" }}
               />
             ) : (
-              <div className="flex-1 h-full flex flex-col items-center justify-center gap-3">
-                <div className="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center">
-                  <Monitor size={20} className="text-[#555]" />
+              <div className="flex flex-col items-center justify-center gap-3">
+                <div className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center">
+                  <Monitor size={22} className="text-[#444]" />
                 </div>
-                <p className="text-xs text-[#555]">
-                  {isAgentConnected ? "Waiting for screenshot..." : "Waiting for PC agent to connect..."}
+                <p className="text-xs text-[#555] text-center max-w-[200px]">
+                  {isAgentConnected
+                    ? "Agent connected. Waiting for live screen..."
+                    : "Waiting for PC agent to connect..."}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                  <span className="text-[10px] text-[#444]">Listening</span>
+                  <div className={`w-1.5 h-1.5 rounded-full ${isAgentConnected ? "bg-green-500" : "bg-blue-500"} animate-pulse`} />
+                  <span className="text-[10px] text-[#444]">{isAgentConnected ? "Online" : "Listening"}</span>
                 </div>
               </div>
             )}
@@ -147,16 +162,20 @@ export default function RightPanel({ socket, onClose }: RightPanelProps) {
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{
-                  width: screenshot ? "100%" : "33%",
+                  width: screenshot ? "100%" : isAgentConnected ? "60%" : "20%",
                   background: "linear-gradient(90deg, #3b82f6, #8b5cf6)",
                   animation: screenshot ? "none" : "pulse 2s ease-in-out infinite",
                 }}
               />
             </div>
             <div className="flex items-center gap-1.5 text-[10px] font-medium tracking-wide">
-              <div className={`w-1.5 h-1.5 rounded-full ${screenshot ? "bg-green-500" : "bg-yellow-500 animate-pulse"}`} />
-              <span className={screenshot ? "text-green-400" : "text-yellow-400"}>
-                {screenshot ? "live" : "waiting"}
+              <div className={`w-1.5 h-1.5 rounded-full ${
+                screenshot ? "bg-green-500" : isAgentConnected ? "bg-blue-500 animate-pulse" : "bg-yellow-500 animate-pulse"
+              }`} />
+              <span className={
+                screenshot ? "text-green-400" : isAgentConnected ? "text-blue-400" : "text-yellow-400"
+              }>
+                {screenshot ? "live" : isAgentConnected ? "ready" : "waiting"}
               </span>
             </div>
           </div>

@@ -90,7 +90,7 @@ export default function Home() {
         onClose={() => setIsSidebarOpen(false)}
         isDesktopCollapsed={isDesktopCollapsed}
         onToggleDesktopCollapse={() => setIsDesktopCollapsed(!isDesktopCollapsed)}
-        onNavigateHome={() => { setActiveView("search"); setIsDesktopCollapsed(false); setIsSidebarOpen(false); }}
+        onNavigateHome={() => { setActiveView("search"); setActiveThreadId(crypto.randomUUID()); setComputerMode(false); setIsDesktopCollapsed(false); setIsSidebarOpen(false); }}
       />
 
       {/* Mobile Overlay */}
