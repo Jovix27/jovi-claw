@@ -6,35 +6,24 @@ import {
   Monitor,
   Plus,
   History,
-  Compass,
-  LayoutGrid,
   Settings,
-  Zap,
-  ChevronRight,
-  Circle,
   Bot,
   Library,
+  X,
 } from "lucide-react";
-import { Socket } from "socket.io-client";
 
 interface SidebarProps {
   activeView: "search" | "computer" | "agents" | "library" | "history";
   onViewChange: (v: "search" | "computer" | "agents" | "library" | "history") => void;
   onNewThread: () => void;
   computerMode: boolean;
-  onComputerModeToggle: () => void;
-  socket: Socket | null;
   activeThreadId: string;
   onThreadSelect: (t: string) => void;
   onOpenSettings: () => void;
   isOpen: boolean;
   onClose: () => void;
-}
-
-interface ActionLog {
-  time: string;
-  action: string;
-  detail: string;
+  isDesktopCollapsed: boolean;
+  onToggleDesktopCollapse: () => void;
 }
 
 const MAIN_NAV = [
@@ -60,6 +49,8 @@ export default function Sidebar({
   onOpenSettings,
   isOpen,
   onClose,
+  isDesktopCollapsed,
+  onToggleDesktopCollapse,
 }: SidebarProps) {
   const [threads, setThreads] = useState<Array<{thread_id: string; title: string; updated_at: number}>>([]);
 
@@ -84,19 +75,34 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`fixed md:relative flex flex-col w-64 h-full shrink-0 border-r border-white/[0.06] z-50 transition-transform duration-300 ease-in-out ${
-        isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+      className={`fixed md:relative flex flex-col h-full shrink-0 border-r border-white/[0.06] z-50 transition-all duration-300 ease-in-out overflow-hidden ${
+        isOpen ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0"
+      } ${
+        !isOpen && isDesktopCollapsed ? "md:w-0 md:opacity-0 md:border-none md:-ml-px" : "md:w-64"
       }`}
       style={{ background: "#111111" }}
     >
-      {/* Brand */}
-      <div className="px-4 pt-5 pb-3">
-        <span
-          className="text-[28px] text-[#e0e0e0] select-none italic"
-          style={{ letterSpacing: "-0.02em", fontFamily: "var(--font-newsreader), serif" }}
+      {/* Brand & Mobile Close */}
+      <div className="px-4 pt-5 pb-3 flex items-center justify-between shrink-0">
+        <button
+          onClick={onToggleDesktopCollapse}
+          className="flex items-center hover:opacity-80 transition-opacity"
+          aria-label="Toggle Sidebar"
         >
-          jovi
-        </span>
+          <span
+            className="text-[28px] text-[#e0e0e0] select-none italic"
+            style={{ letterSpacing: "-0.02em", fontFamily: "var(--font-cormorant), serif" }}
+          >
+            jovi
+          </span>
+        </button>
+        <button
+          onClick={onClose}
+          className="md:hidden p-1 -mr-1 text-[#888] hover:text-white transition-colors"
+          aria-label="Close sidebar"
+        >
+          <X size={20} />
+        </button>
       </div>
 
       {/* Primary nav */}

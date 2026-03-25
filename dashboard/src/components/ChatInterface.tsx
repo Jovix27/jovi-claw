@@ -193,7 +193,7 @@ export default function ChatInterface({
     // Auto-detect production API if not set
     let apiBase = process.env.NEXT_PUBLIC_API_URL;
     if (!apiBase && typeof window !== "undefined") {
-      if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-claw.vercel.app") {
+      if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-ai.vercel.app") {
         apiBase = "https://jovi-claw-production-6270.up.railway.app";
       } else {
         apiBase = "http://localhost:3001";
@@ -228,7 +228,7 @@ export default function ChatInterface({
     // Auto-detect production API
     let apiBase = process.env.NEXT_PUBLIC_API_URL;
     if (!apiBase && typeof window !== "undefined") {
-      if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-claw.vercel.app") {
+      if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-ai.vercel.app") {
         apiBase = "https://jovi-claw-production-6270.up.railway.app";
       } else {
         apiBase = "http://localhost:3001";
@@ -265,7 +265,7 @@ export default function ChatInterface({
     // Auto-detect production API if not set
     let apiBase = process.env.NEXT_PUBLIC_API_URL;
     if (!apiBase && typeof window !== "undefined") {
-      if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-claw.vercel.app") {
+      if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-ai.vercel.app") {
         apiBase = "https://jovi-claw-production.up.railway.app";
       } else {
         apiBase = "http://localhost:3001";
@@ -372,7 +372,7 @@ export default function ChatInterface({
         <div className="flex items-center gap-2">
           <span
             className="text-xl text-[#e0e0e0] italic"
-            style={{ letterSpacing: "-0.02em", fontFamily: "var(--font-newsreader), serif" }}
+            style={{ letterSpacing: "-0.02em", fontFamily: "var(--font-cormorant), serif" }}
           >
             jovi
           </span>
@@ -388,7 +388,7 @@ export default function ChatInterface({
           {/* Wordmark */}
           <h1
             className="text-5xl text-[#e0e0e0] mb-8 select-none italic"
-            style={{ letterSpacing: "-0.04em", fontFamily: "var(--font-newsreader), serif" }}
+            style={{ letterSpacing: "-0.04em", fontFamily: "var(--font-cormorant), serif" }}
           >
             jovi
           </h1>

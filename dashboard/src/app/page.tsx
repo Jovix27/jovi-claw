@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { Socket } from "socket.io-client";
+import { Menu } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import ChatInterface from "@/components/ChatInterface";
 import SettingsModal from "@/components/SettingsModal";
@@ -15,6 +16,7 @@ export default function Home() {
   const [activeThreadId, setActiveThreadId] = useState<string>("");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
 
   useEffect(() => {
     // Client-side only init
@@ -59,6 +61,8 @@ export default function Home() {
         onOpenSettings={() => { setIsSettingsOpen(true); setIsSidebarOpen(false); }}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
+        isDesktopCollapsed={isDesktopCollapsed}
+        onToggleDesktopCollapse={() => setIsDesktopCollapsed(!isDesktopCollapsed)}
       />
 
       {/* Mobile Overlay */}
@@ -68,7 +72,16 @@ export default function Home() {
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        {isDesktopCollapsed && (
+          <button
+            onClick={() => setIsDesktopCollapsed(false)}
+            className="hidden md:flex absolute top-4 left-4 z-40 p-2 rounded-md text-[#888] hover:bg-white/10 hover:text-white transition-colors"
+            aria-label="Open Sidebar"
+          >
+            <Menu size={20} />
+          </button>
+        )}
         {activeView === "history" ? (
           <HistoryView onThreadSelect={handleThreadSelect} />
         ) : (
