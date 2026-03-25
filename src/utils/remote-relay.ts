@@ -56,6 +56,37 @@ let bootstrapperSocket: WebSocket | null = null;
 const pending = new Map<string, PendingRequest>();
 const DEFAULT_TIMEOUT_MS = 30_000;
 let agentConnectedCallback: (() => Promise<void>) | null = null;
+let screenshotLoopInterval: ReturnType<typeof setInterval> | null = null;
+
+// ─── Live Screenshot Loop ───────────────────────────────
+function startScreenshotLoop(): void {
+    if (screenshotLoopInterval) return; // already running
+    logger.info("📸 Starting live screenshot broadcast loop (every 3s)");
+    screenshotLoopInterval = setInterval(async () => {
+        if (!isRemoteAgentConnected()) return;
+        try {
+            const result = await sendRemoteRequest("screenshot", {}, 8000);
+            if (result.imageData) {
+                broadcastScreenshot(result.imageData);
+            }
+        } catch {
+            // Silently skip if agent is busy
+        }
+    }, 3000);
+}
+
+function stopScreenshotLoop(): void {
+    if (screenshotLoopInterval) {
+        clearInterval(screenshotLoopInterval);
+        screenshotLoopInterval = null;
+        logger.info("📸 Stopped live screenshot broadcast loop");
+    }
+}
+
+function broadcastScreenshot(imageData: string): void {
+    if (!io) return;
+    io.emit("screenshot", { imageData, timestamp: Date.now() });
+}
 
 /**
  * Register a callback that fires whenever the remote agent (PC) connects.
@@ -236,6 +267,44 @@ export function startRelayServer(secret: string, port: number): void {
             bootstrapper_connected: isRemoteBootstrapperConnected(),
             version: "1.0.0"
         });
+    });
+
+    // ─── Agent Mode API (for Dashboard Computer Mode) ────
+    app.post("/api/agent-mode", authMiddleware, async (req, res) => {
+        try {
+            const { enabled } = req.body;
+            const { setAgentMode, getAgentMode } = await import("../tools/index.js");
+            let userId = Number(req.body.userId) || 0;
+            if (userId === 0 && process.env.ALLOWED_USER_IDS) {
+                userId = parseInt(process.env.ALLOWED_USER_IDS.split(",")[0], 10);
+            }
+            await setAgentMode(userId, !!enabled);
+
+            // Start/stop the live screenshot loop
+            if (enabled) {
+                startScreenshotLoop();
+            } else {
+                stopScreenshotLoop();
+            }
+
+            res.json({ status: "ok", agent_mode: !!enabled, agent_connected: isRemoteAgentConnected() });
+        } catch (e: any) {
+            res.status(500).json({ error: e.message });
+        }
+    });
+
+    app.get("/api/agent-mode", authMiddleware, async (_req, res) => {
+        try {
+            const { getAgentMode } = await import("../tools/index.js");
+            let userId = 0;
+            if (process.env.ALLOWED_USER_IDS) {
+                userId = parseInt(process.env.ALLOWED_USER_IDS.split(",")[0], 10);
+            }
+            const enabled = await getAgentMode(userId);
+            res.json({ agent_mode: enabled, agent_connected: isRemoteAgentConnected() });
+        } catch (e: any) {
+            res.status(500).json({ error: e.message });
+        }
     });
 
     // ─── NEW: History API ─────────────────────────────

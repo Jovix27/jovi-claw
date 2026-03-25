@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Socket } from "socket.io-client";
 import { Menu } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
@@ -46,6 +46,33 @@ export default function Home() {
     if (v === "computer" || v === "agents") setComputerMode(true);
     else setComputerMode(false);
   }, []);
+
+  // Auto-activate agent mode on backend when Computer mode toggles
+  const agentModeCalledRef = useRef(false);
+  useEffect(() => {
+    if (!agentModeCalledRef.current) {
+      agentModeCalledRef.current = true;
+      return; // skip the initial render
+    }
+
+    let apiBase = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiBase && typeof window !== "undefined") {
+      if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-ai.vercel.app") {
+        apiBase = "https://jovi-claw-production-6270.up.railway.app";
+      } else {
+        apiBase = "http://localhost:3001";
+      }
+    } else if (!apiBase) {
+      apiBase = "http://localhost:3001";
+    }
+
+    const token = process.env.NEXT_PUBLIC_JOVI_SECRET || "";
+    fetch(`${apiBase}/api/agent-mode`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ enabled: computerMode }),
+    }).catch(() => {});
+  }, [computerMode]);
 
   return (
     <main className="flex h-screen w-full overflow-hidden" style={{ background: "#141414" }}>
