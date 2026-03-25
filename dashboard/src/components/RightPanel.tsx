@@ -5,8 +5,13 @@ import { Socket } from "socket.io-client";
 import { Monitor, X, Globe, Wifi, WifiOff } from "lucide-react";
 
 function getApiBase(): string {
-  const env = process.env.NEXT_PUBLIC_API_URL;
+  let env = process.env.NEXT_PUBLIC_API_URL;
+  // Force correction if env var is the old one (without suffix)
+  if (env && env.includes("jovi-claw-production.up.railway.app") && !env.includes("-6270")) {
+    env = "https://jovi-claw-production-6270.up.railway.app";
+  }
   if (env) return env;
+
   if (typeof window !== "undefined") {
     if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-ai.vercel.app") {
       return "https://jovi-claw-production-6270.up.railway.app";

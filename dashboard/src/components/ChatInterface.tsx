@@ -192,6 +192,10 @@ export default function ChatInterface({
     
     // Auto-detect production API if not set
     let apiBase = process.env.NEXT_PUBLIC_API_URL;
+    if (apiBase && apiBase.includes("jovi-claw-production.up.railway.app") && !apiBase.includes("-6270")) {
+        apiBase = "https://jovi-claw-production-6270.up.railway.app";
+    }
+
     if (!apiBase && typeof window !== "undefined") {
       if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-ai.vercel.app") {
         apiBase = "https://jovi-claw-production-6270.up.railway.app";
@@ -264,6 +268,10 @@ export default function ChatInterface({
 
     // Auto-detect production API if not set
     let apiBase = process.env.NEXT_PUBLIC_API_URL;
+    if (apiBase && apiBase.includes("jovi-claw-production.up.railway.app") && !apiBase.includes("-6270")) {
+        apiBase = "https://jovi-claw-production-6270.up.railway.app";
+    }
+
     if (!apiBase && typeof window !== "undefined") {
       if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-ai.vercel.app") {
         apiBase = "https://jovi-claw-production-6270.up.railway.app";

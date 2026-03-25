@@ -208,9 +208,28 @@ export function startRelayServer(secret: string, port: number): void {
 
     const app = express();
     app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
 
-    // ─── Middleware: CORS ─────────────────────────────────
-    app.use(cors({ origin: "*", methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"], allowedHeaders: ["Content-Type", "Authorization"] }));
+    // ─── Middleware: Robust CORS ──────────────────────────
+    const allowedOrigins = [
+        "https://jovi-ai.vercel.app",
+        "https://jovi-claw-production-6270.up.railway.app",
+        "http://localhost:3000",
+        "http://localhost:3001"
+    ];
+
+    app.use(cors({
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+                callback(null, true);
+            } else {
+                callback(null, true); // Fallback to allowing all while debugging, but specifying headers better
+            }
+        },
+        credentials: true,
+        methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"]
+    }));
 
     // ─── Middleware: Simple Bearer Auth (for REST) ────────
     const authMiddleware = (_req: any, res: any, next: any) => {

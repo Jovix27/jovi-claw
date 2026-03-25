@@ -4,8 +4,13 @@ import { useState, useEffect } from "react";
 import { History, MessageSquare, Clock } from "lucide-react";
 
 function getApiBase(): string {
-  const env = process.env.NEXT_PUBLIC_API_URL;
+  let env = process.env.NEXT_PUBLIC_API_URL;
+  // Force correction if env var is the old one (without suffix)
+  if (env && env.includes("jovi-claw-production.up.railway.app") && !env.includes("-6270")) {
+    env = "https://jovi-claw-production-6270.up.railway.app";
+  }
   if (env) return env;
+  
   if (typeof window !== "undefined") {
     if (window.location.hostname.includes("vercel.app") || window.location.hostname === "jovi-ai.vercel.app") {
       return "https://jovi-claw-production-6270.up.railway.app";
@@ -23,26 +28,28 @@ export default function HistoryView({ onThreadSelect }: HistoryViewProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchThreads = async () => {
-      try {
-        setError(null);
-        const apiBase = getApiBase();
-        const token = process.env.NEXT_PUBLIC_JOVI_SECRET || "";
-        const res = await fetch(`${apiBase}/api/history`, { headers: { Authorization: `Bearer ${token}` } });
-        if (res.ok) {
-          const d = await res.json();
-          setThreads(d.threads || []);
-        } else {
-          setError(`Failed to load history (${res.status})`);
-        }
-      } catch (err) {
-        console.error("Failed to fetch history:", err);
-        setError("Could not connect to server. Is the backend running?");
-      } finally {
-        setLoading(false);
+  const fetchThreads = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const apiBase = getApiBase();
+      const token = process.env.NEXT_PUBLIC_JOVI_SECRET || "";
+      const res = await fetch(`${apiBase}/api/history`, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.ok) {
+        const d = await res.json();
+        setThreads(d.threads || []);
+      } else {
+        setError(`Failed to load history (${res.status})`);
       }
-    };
+    } catch (err) {
+      console.error("Failed to fetch history:", err);
+      setError("Could not connect to server. Is the backend running?");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchThreads();
   }, []);
 
@@ -51,7 +58,7 @@ export default function HistoryView({ onThreadSelect }: HistoryViewProps) {
       <div className="max-w-4xl mx-auto w-full px-8 py-12">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-            <History size={20} className="text-white" />
+            < History size={20} className="text-white" />
           </div>
           <h1 className="text-2xl font-semibold text-white tracking-tight">Chat History</h1>
         </div>
@@ -65,7 +72,7 @@ export default function HistoryView({ onThreadSelect }: HistoryViewProps) {
           <div className="text-center py-20">
             <p className="text-red-400/80 text-sm">{error}</p>
             <button
-              onClick={() => { setLoading(true); setError(null); /* re-trigger */ }}
+              onClick={() => { setLoading(true); setError(null); fetchThreads(); }}
               className="mt-3 text-xs text-blue-400 hover:text-blue-300"
             >
               Retry
